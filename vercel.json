@@ -1,0 +1,30 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self';"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/full_frontend_learn",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/full_frontend_learn.html",
+      "destination": "/index.html"
+    }
+  ]
+}
