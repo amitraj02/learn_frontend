@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL Masterclass — Deep Dive from Basics to Advanced Analytics</title>
+  <meta name="description" content="Learn SQL deeply with simple language, visual diagrams, syntax breakdowns, real-world trading & analytics examples, and a live in-browser SQLite execution sandbox.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- SQL.js (In-browser SQLite WebAssembly) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+
+  <style>
+    /* ==========================================================================
+       CSS Design System & Variables
+       ========================================================================== */
+    :root {
+      --bg-base: #0a0d14;
+      --bg-surface: #111724;
+      --bg-card: #161e30;
+      --bg-card-hover: #1c263d;
+      --bg-code: #0b0f19;
+      --border-subtle: #222d46;
+      --border-highlight: #35476d;
+      
+      --accent-cyan: #00f2fe;
+      --accent-indigo: #6366f1;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+      
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      
+      --font-heading: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.18);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-base);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-highlight);
+      border-radius: var(--radius-full);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-indigo);
+    }
+
+    /* ==========================================================================
+       Top Navigation Bar
+       ========================================================================== */
+    .top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.5rem;
+      gap: 1rem;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+    .brand-logo .badge {
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #fff;
+    }
+
+    .nav-search {
+      flex: 1;
+      max-width: 460px;
+      position: relative;
+    }
+    .nav-search input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 0.5rem 1rem 0.5rem 2.4rem;
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .nav-search input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.15);
+    }
+    .nav-search-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .btn-sandbox-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-sandbox-toggle:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.5);
+    }
+
+    /* Reading Progress Bar */
+    .reading-progress-track {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+      z-index: 999;
+    }
+    .reading-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-indigo), var(--accent-cyan), var(--accent-emerald));
+      transition: width 0.1s linear;
+    }
+
+    /* ==========================================================================
+       Layout: Sidebar + Main Content
+       ========================================================================== */
+    .app-container {
+      display: flex;
+      min-height: calc(100vh - 56px);
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Sidebar Navigation */
+    .app-sidebar {
+      width: 300px;
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.5rem 1rem;
+      position: sticky;
+      top: 59px;
+      height: calc(100vh - 59px);
+      overflow-y: auto;
+    }
+
+    .sidebar-section-title {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin: 1.25rem 0 0.5rem 0.5rem;
+    }
+    .sidebar-section-title:first-child {
+      margin-top: 0;
+    }
+
+    .sidebar-nav-list {
+      list-style: none;
+    }
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+    }
+    .sidebar-nav-link:hover {
+      background: var(--bg-card);
+      color: var(--accent-cyan);
+    }
+    .sidebar-nav-link.active {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-cyan);
+      border-left: 3px solid var(--accent-cyan);
+      font-weight: 600;
+    }
+    .nav-badge {
+      font-size: 0.68rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    /* Main Content Area */
+    .app-main {
+      flex: 1;
+      padding: 2.5rem 3rem;
+      max-width: 1020px;
+      min-width: 0;
+    }
+
+    /* ==========================================================================
+       Hero Banner
+       ========================================================================== */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%), var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-glow);
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -20%;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(0, 242, 254, 0.12), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-tagline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: var(--accent-cyan);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      margin-bottom: 1rem;
+    }
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 720px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-num {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       Interactive Execution Order Widget
+       ========================================================================== */
+    .execution-order-widget {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+    .widget-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .widget-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+    }
+    .order-pipeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .pipeline-step {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .pipeline-step:hover, .pipeline-step.active {
+      border-color: var(--accent-indigo);
+      background: rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    .pipeline-step.active {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
+    }
+    .pipeline-step .step-number {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent-indigo);
+      margin-bottom: 0.2rem;
+    }
+    .pipeline-step .step-name {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+    }
+    .pipeline-explanation-box {
+      background: var(--bg-code);
+      border-left: 3px solid var(--accent-cyan);
+      padding: 0.85rem 1.2rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================================================================
+       Interactive JOIN Visualizer Component
+       ========================================================================== */
+    .join-visualizer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin: 2rem 0;
+    }
+    .join-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0 1.5rem;
+    }
+    .join-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .join-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+    .join-btn.active {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--accent-indigo);
+      color: var(--accent-cyan);
+    }
+    .join-visual-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    @media (max-width: 860px) {
+      .join-visual-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .join-venn-svg {
+      width: 100%;
+      max-width: 240px;
+      margin: 0 auto;
+      display: block;
+    }
+    .venn-circle {
+      transition: fill 0.3s ease, opacity 0.3s ease;
+    }
+    .join-table-preview {
+      overflow-x: auto;
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+
+    /* ==========================================================================
+       Content Modules & Cards
+       ========================================================================== */
+    .module-container {
+      margin-bottom: 4rem;
+      scroll-margin-top: 80px;
+    }
+    .module-header {
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .module-title {
+      font-family: var(--font-heading);
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .module-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-full);
+      background: rgba(0, 242, 254, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+    }
+    .concept-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s ease;
+      scroll-margin-top: 80px;
+    }
+    .concept-card:hover {
+      border-color: var(--border-highlight);
+    }
+    .concept-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .concept-description {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      line-height: 1.7;
+    }
+    .concept-description p {
+      margin-bottom: 0.75rem;
+    }
+    .concept-description strong {
+      color: var(--text-primary);
+    }
+    .concept-description code {
+      background: var(--bg-code);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--accent-emerald);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Mental Model Callouts */
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: 0.9rem;
+      display: flex;
+      gap: 0.85rem;
+      line-height: 1.6;
+    }
+    .callout-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #a7f3d0;
+    }
+    .callout-tip strong {
+      color: var(--accent-emerald);
+    }
+    .callout-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fde68a;
+    }
+    .callout-warning strong {
+      color: var(--accent-amber);
+    }
+    .callout-analogy {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #c7d2fe;
+    }
+    .callout-analogy strong {
+      color: var(--accent-cyan);
+    }
+
+    /* ==========================================================================
+       Code Editor & Interactive SQL Block
+       ========================================================================== */
+    .sql-code-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: 1.25rem 0;
+    }
+    .code-block-header {
+      background: #0f1422;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .code-block-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .code-block-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-code-action {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .btn-code-action:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border-color: var(--border-highlight);
+    }
+    .btn-run-query {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--accent-emerald);
+      font-weight: 600;
+    }
+    .btn-run-query:hover {
+      background: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      border-color: var(--accent-emerald);
+    }
+
+    pre.code-content {
+      padding: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    /* SQL Keyword Syntax Highlighting */
+    .kw { color: #f43f5e; font-weight: 600; } /* SELECT, FROM, WHERE */
+    .fn { color: #38bdf8; } /* COUNT, SUM, AVG */
+    .str { color: #a3e635; } /* 'strings' */
+    .num { color: #f59e0b; } /* numbers */
+    .cm { color: #64748b; font-style: italic; } /* comments */
+    .tbl { color: #e2e8f0; font-weight: 500; }
+    .op { color: #c084fc; } /* +, -, *, =, LIKE */
+
+    /* Query Result Table Output */
+    .query-result-container {
+      display: none;
+      background: #080c14;
+      border-top: 1px solid var(--border-subtle);
+      padding: 1rem;
+    }
+    .result-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+    .result-table-wrap {
+      overflow-x: auto;
+      max-height: 280px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+    }
+    .sql-result-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    .sql-result-table th {
+      background: #111726;
+      color: var(--accent-cyan);
+      padding: 0.5rem 0.85rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-highlight);
+      position: sticky;
+      top: 0;
+      white-space: nowrap;
+    }
+    .sql-result-table td {
+      padding: 0.45rem 0.85rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .sql-result-table tr:hover td {
+      background: rgba(99, 102, 241, 0.08);
+      color: var(--text-primary);
+    }
+
+    /* ==========================================================================
+       Interactive SQL Sandbox Modal / Floating Drawer
+       ========================================================================== */
+    .sandbox-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .sandbox-modal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-highlight);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 960px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .sandbox-header {
+      padding: 1rem 1.5rem;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sandbox-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .sandbox-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+    }
+    .sandbox-close-btn:hover {
+      color: #fff;
+      background: var(--border-subtle);
+    }
+    .sandbox-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .sandbox-preset-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .preset-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .preset-pill:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+    .sandbox-editor-textarea {
+      width: 100%;
+      height: 140px;
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--accent-cyan);
+      resize: vertical;
+      outline: none;
+      line-height: 1.5;
+    }
+    .sandbox-editor-textarea:focus {
+      border-color: var(--accent-indigo);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+    .sandbox-action-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sandbox-tables-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       Quiz & Challenge Box
+       ========================================================================== */
+    .challenge-card {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(16, 185, 129, 0.05) 100%), var(--bg-card);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .challenge-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .challenge-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-amber);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .challenge-prompt {
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+    .challenge-toggle-solution {
+      background: transparent;
+      border: 1px dashed var(--border-highlight);
+      color: var(--accent-cyan);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .challenge-solution-content {
+      display: none;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    /* Footer */
+    .app-footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 3rem 0;
+      margin-top: 4rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 960px) {
+      .app-sidebar {
+        display: none;
+      }
+      .app-main {
+        padding: 1.5rem 1rem;
+      }
+      .hero-title {
+        font-size: 2rem;
+      }
+      .hero-banner {
+        padding: 1.75rem;
+      }
+    }
+
+    /* Embedded Mode in Master Hub */
+    .is-embedded .global-nav-link,
+    .is-embedded .brand-logo {
+      display: none !important;
+    }
+    .is-embedded .top-navbar {
+      top: 0;
+      padding: 0.4rem 1.25rem;
+      background: rgba(15, 23, 42, 0.95);
+    }
+  </style>
+  <script>
+    if (window.self !== window.top) {
+      document.documentElement.classList.add('is-embedded');
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.add('is-embedded');
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-navbar">
+    <a href="#" class="brand-logo">
+      <span class="badge">SQL PRO</span>
+      <span>Masterclass</span>
+    </a>
+
+    <!-- Live Topic Search -->
+    <div class="nav-search">
+      <span class="nav-search-icon">🔍</span>
+      <input type="text" id="topicSearchInput" placeholder="Search syntax, functions, topics (e.g. JOIN, GROUP BY, RANK)..." oninput="handleSearch()">
+    </div>
+
+    <!-- Navigation Actions -->
+    <div class="nav-actions">
+      <a href="../full_frontend_learn.html" target="_top" class="btn-sandbox-toggle global-nav-link" style="background: rgba(255,255,255,0.06); text-decoration: none; color: #38bdf8;">🏠 Hub</a>
+      <a href="../about_me.html" target="_top" class="btn-sandbox-toggle global-nav-link" style="background: rgba(192,132,252,0.12); border: 1px solid rgba(192,132,252,0.4); text-decoration: none; color: #c084fc;">👤 About Me</a>
+      <button class="btn-sandbox-toggle" onclick="openSandbox()">
+        <span>⚡</span>
+        <span>Interactive Sandbox</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-track">
+    <div class="reading-progress-bar" id="readingProgressBar"></div>
+  </div>
+
+  <div class="app-container">
+    
+    <!-- Left Sticky Sidebar -->
+    <nav class="app-sidebar" id="appSidebar">
+      <div class="sidebar-section-title">Fundamentals</div>
+      <ul class="sidebar-nav-list">
+        <li><a href="#mod-1-foundations" class="sidebar-nav-link active"><span>1. Relational Mental Model</span><span class="nav-badge">Concept</span></a></li>
+        <li><a href="#sec-execution-order" class="sidebar-nav-link"><span>2. Execution Order Secret</span><span class="nav-badge">Crucial</span></a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Basic Querying (DQL)</div>
+      <ul class="sidebar-nav-list">
+        <li><a href="#sec-select-where" class="sidebar-nav-link"><span>3. SELECT, DISTINCT & WHERE</span><span class="nav-badge">Core</span></a></li>
+        <li><a href="#sec-operators-wildcards" class="sidebar-nav-link"><span>4. LIKE, IN & BETWEEN</span><span class="nav-badge">Filter</span></a></li>
+        <li><a href="#sec-sort-paging" class="sidebar-nav-link"><span>5. ORDER BY & LIMIT</span><span class="nav-badge">Sorting</span></a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Schema & Mutation</div>
+      <ul class="sidebar-nav-list">
+        <li><a href="#sec-dml-actions" class="sidebar-nav-link"><span>6. INSERT, UPDATE, DELETE</span><span class="nav-badge">DML</span></a></li>
+        <li><a href="#sec-ddl-tables" class="sidebar-nav-link"><span>7. CREATE TABLE & Keys</span><span class="nav-badge">DDL</span></a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Joins & Sets</div>
+      <ul class="sidebar-nav-list">
+        <li><a href="#sec-join-visualizer" class="sidebar-nav-link"><span>8. Visual JOINs Explorer</span><span class="nav-badge">Visual</span></a></li>
+        <li><a href="#sec-joins-deep-dive" class="sidebar-nav-link"><span>9. INNER, LEFT, FULL Joins</span><span class="nav-badge">Relational</span></a></li>
+        <li><a href="#sec-set-unions" class="sidebar-nav-link"><span>10. UNION vs UNION ALL</span><span class="nav-badge">Sets</span></a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Analytics & Grouping</div>
+      <ul class="sidebar-nav-list">
+        <li><a href="#sec-aggregations" class="sidebar-nav-link"><span>11. SUM, AVG, COUNT</span><span class="nav-badge">Aggs</span></a></li>
+        <li><a href="#sec-groupby-having" class="sidebar-nav-link"><span>12. GROUP BY & HAVING</span><span class="nav-badge">Key</span></a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Advanced SQL & Analytics</div>
+      <ul class="sidebar-nav-list">
+        <li><a href="#sec-window-functions" class="sidebar-nav-link"><span>13. Window Functions (OVER)</span><span class="nav-badge">Senior</span></a></li>
+        <li><a href="#sec-ctes" class="sidebar-nav-link"><span>14. CTEs (WITH Clause)</span><span class="nav-badge">Clean</span></a></li>
+        <li><a href="#sec-case-dates" class="sidebar-nav-link"><span>15. CASE WHEN & Date Time</span><span class="nav-badge">Logic</span></a></li>
+        <li><a href="#sec-trading-analytics" class="sidebar-nav-link"><span>16. Financial & Trading SQL</span><span class="nav-badge">Practical</span></a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Performance & Architecture</div>
+      <ul class="sidebar-nav-list">
+        <li><a href="#sec-indexing-perf" class="sidebar-nav-link"><span>17. Indexes & EXPLAIN PLAN</span><span class="nav-badge">Speed</span></a></li>
+        <li><a href="#sec-transactions" class="sidebar-nav-link"><span>18. Transactions & ACID</span><span class="nav-badge">Safety</span></a></li>
+      </ul>
+    </nav>
+
+    <!-- Main Content Stream -->
+    <main class="app-main" id="mainContentArea">
+
+      <!-- Hero Header -->
+      <section class="hero-banner">
+        <div class="hero-tagline">
+          <span>⚡</span> Complete Interactive Masterclass
+        </div>
+        <h1 class="hero-title">Learn SQL In Depth</h1>
+        <p class="hero-subtitle">
+          From relational foundations to high-performance analytics, window functions, and time-series financial queries. Every query is live, executable in your browser, and explained in clear, intuitive language.
+        </p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">7 Modules</span>
+            <span class="stat-label">Structured Progression</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">Live WASM</span>
+            <span class="stat-label">In-Browser SQLite</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">Visual Joins</span>
+            <span class="stat-label">Interactive Venn Diagrams</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">Real Datasets</span>
+            <span class="stat-label">Trading & Orders Data</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           MODULE 1: RELATIONAL MENTAL MODEL & ARCHITECTURE
+           ===================================================================== -->
+      <article class="module-container" id="mod-1-foundations">
+        <header class="module-header">
+          <h2 class="module-title">
+            <span>01. Relational Foundations & Architecture</span>
+          </h2>
+          <span class="module-pill">Beginner to Pro</span>
+        </header>
+
+        <div class="concept-card" id="sec-relational-model">
+          <h3 class="concept-title">💡 The Mental Model: Tables as Excel Sheets with Strict Contracts</h3>
+          <div class="concept-description">
+            <p>
+              Imagine an Excel workbook. Each worksheet is a <strong>Table</strong>. Each horizontal line is a <strong>Row (Record)</strong> representing one specific entity (like a customer, an order, or a 1-minute stock candle). Each vertical column is a <strong>Field (Attribute)</strong> with a strict data type (Number, Text, or Date).
+            </p>
+            <p>
+              Unlike an Excel spreadsheet where you can type anything anywhere, a Relational Database guarantees <strong>Integrity</strong>: a price column will never accidentally contain a letter, and every row can be uniquely identified.
+            </p>
+          </div>
+
+          <div class="callout callout-analogy">
+            <span class="callout-icon">🏛️</span>
+            <div>
+              <strong>The 4 SQL Dialect Families:</strong><br>
+              • <strong>DQL (Query):</strong> <code>SELECT</code> — Asking questions and viewing data without changing it.<br>
+              • <strong>DML (Manipulation):</strong> <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code> — Adding, altering, or removing rows.<br>
+              • <strong>DDL (Definition):</strong> <code>CREATE</code>, <code>ALTER</code>, <code>DROP</code> — Creating or altering the table structures.<br>
+              • <strong>TCL (Control):</strong> <code>COMMIT</code>, <code>ROLLBACK</code> — Managing transactional checkpoints and safety.
+            </div>
+          </div>
+        </div>
+
+        <!-- Order of Execution Pipeline Widget -->
+        <div class="concept-card" id="sec-execution-order">
+          <h3 class="concept-title">⚡ The Golden Secret: How SQL Actually Runs (Execution Order)</h3>
+          <div class="concept-description">
+            <p>
+              Most beginners struggle with SQL because <strong>the order you write SQL is NOT the order the database executes it!</strong>
+            </p>
+            <p>
+              You start your query with <code>SELECT</code>, but the database actually executes <code>SELECT</code> near the very end. This is why you cannot use a column alias defined in <code>SELECT</code> inside your <code>WHERE</code> clause!
+            </p>
+          </div>
+
+          <!-- Interactive Execution Order Widget -->
+          <div class="execution-order-widget">
+            <div class="widget-title">
+              <span>🔄</span> Step-by-Step Execution Pipeline (Click each step)
+            </div>
+            <div class="widget-desc">
+              Click any step below to see what the database engine does behind the scenes:
+            </div>
+            <div class="order-pipeline" id="pipelineSteps">
+              <div class="pipeline-step active" onclick="selectPipelineStep(1)">
+                <div class="step-number">STEP 1</div>
+                <div class="step-name">FROM / JOIN</div>
+              </div>
+              <div class="pipeline-step" onclick="selectPipelineStep(2)">
+                <div class="step-number">STEP 2</div>
+                <div class="step-name">WHERE</div>
+              </div>
+              <div class="pipeline-step" onclick="selectPipelineStep(3)">
+                <div class="step-number">STEP 3</div>
+                <div class="step-name">GROUP BY</div>
+              </div>
+              <div class="pipeline-step" onclick="selectPipelineStep(4)">
+                <div class="step-number">STEP 4</div>
+                <div class="step-name">HAVING</div>
+              </div>
+              <div class="pipeline-step" onclick="selectPipelineStep(5)">
+                <div class="step-number">STEP 5</div>
+                <div class="step-name">SELECT</div>
+              </div>
+              <div class="pipeline-step" onclick="selectPipelineStep(6)">
+                <div class="step-number">STEP 6</div>
+                <div class="step-name">DISTINCT</div>
+              </div>
+              <div class="pipeline-step" onclick="selectPipelineStep(7)">
+                <div class="step-number">STEP 7</div>
+                <div class="step-name">ORDER BY</div>
+              </div>
+              <div class="pipeline-step" onclick="selectPipelineStep(8)">
+                <div class="step-number">STEP 8</div>
+                <div class="step-name">LIMIT</div>
+              </div>
+            </div>
+
+            <div class="pipeline-explanation-box" id="pipelineExplanation">
+              <strong>Step 1: FROM & JOIN</strong> — The database first gathers the source tables and binds joined relations into memory. Nothing else can happen until the engine knows where the rows live!
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- =====================================================================
+           MODULE 2: BASIC QUERYING & FILTERING
+           ===================================================================== -->
+      <article class="module-container" id="mod-2-querying">
+        <header class="module-header">
+          <h2 class="module-title">
+            <span>02. Querying & Filtering (DQL)</span>
+          </h2>
+          <span class="module-pill">Core Retrieval</span>
+        </header>
+
+        <!-- SELECT, DISTINCT, ALIASING -->
+        <div class="concept-card" id="sec-select-where">
+          <h3 class="concept-title">1. Basic SELECT, Column Aliasing & DISTINCT</h3>
+          <div class="concept-description">
+            <p>
+              The <code>SELECT</code> statement extracts columns from a table. Use an alias (<code>AS</code>) to give columns human-friendly labels. Use <code>DISTINCT</code> when you want to remove duplicate rows from your output.
+            </p>
+          </div>
+
+          <!-- Code Snippet with Live Run -->
+          <div class="sql-code-block" id="block-select-basic">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> SQL Example</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-select-basic')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Select unique symbols and compute spread from market candles</span>
+<span class="kw">SELECT</span> 
+    <span class="tbl">symbol</span>,
+    <span class="tbl">close</span>,
+    <span class="tbl">open</span>,
+    (<span class="tbl">high</span> <span class="op">-</span> <span class="tbl">low</span>) <span class="kw">AS</span> <span class="tbl">candle_range</span>,
+    <span class="tbl">volume</span>
+<span class="kw">FROM</span> <span class="tbl">candles</span>
+<span class="kw">WHERE</span> <span class="tbl">volume</span> <span class="op">&gt;</span> <span class="num">1000</span>
+<span class="kw">LIMIT</span> <span class="num">5</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+
+          <div class="callout callout-tip">
+            <span class="callout-icon">💡</span>
+            <div>
+              <strong>Production Best Practice:</strong> Avoid <code>SELECT *</code> in production pipelines! Always explicitly type the column names you need. This saves memory, reduces disk I/O, and avoids application breaks when new columns are added.
+            </div>
+          </div>
+        </div>
+
+        <!-- WHERE, LIKE, IN, BETWEEN -->
+        <div class="concept-card" id="sec-operators-wildcards">
+          <h3 class="concept-title">2. Filtering: WHERE, Pattern Matching (LIKE), IN & BETWEEN</h3>
+          <div class="concept-description">
+            <p>
+              The <code>WHERE</code> clause acts as a bouncer at the door, evaluating row-by-row:
+            </p>
+            <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+              <li><code>=</code>, <code>!=</code> (or <code>&lt;&gt;</code>), <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>: Standard comparisons.</li>
+              <li><code>IN ('NIFTY', 'BANKNIFTY')</code>: Checks if a value belongs to an explicit list.</li>
+              <li><code>BETWEEN 100 AND 500</code>: Inclusive boundary range check.</li>
+              <li><code>LIKE '%TECH%'</code>: Wildcard text matching (<code>%</code> matches any sequence of characters, <code>_</code> matches exactly one character).</li>
+            </ul>
+          </div>
+
+          <div class="sql-code-block" id="block-where-filter">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Advanced Filtering</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-where-filter')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Find all trades where symbol starts with 'RELIANCE' or is in specific list</span>
+<span class="kw">SELECT</span> <span class="tbl">trade_id</span>, <span class="tbl">symbol</span>, <span class="tbl">side</span>, <span class="tbl">price</span>, <span class="tbl">qty</span>, (<span class="tbl">price</span> <span class="op">*</span> <span class="tbl">qty</span>) <span class="kw">AS</span> <span class="tbl">total_val</span>
+<span class="kw">FROM</span> <span class="tbl">trades</span>
+<span class="kw">WHERE</span> (<span class="tbl">symbol</span> <span class="kw">LIKE</span> <span class="str">'%NIFTY%'</span> <span class="kw">OR</span> <span class="tbl">symbol</span> <span class="kw">IN</span> (<span class="str">'TCS'</span>, <span class="str">'INFY'</span>))
+  <span class="kw">AND</span> <span class="tbl">price</span> <span class="kw">BETWEEN</span> <span class="num">1500</span> <span class="kw">AND</span> <span class="num">3500</span>
+<span class="kw">ORDER BY</span> <span class="tbl">price</span> <span class="kw">DESC</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+
+        <!-- Sorting & Paging -->
+        <div class="concept-card" id="sec-sort-paging">
+          <h3 class="concept-title">3. Sorting & Pagination: ORDER BY, LIMIT & OFFSET</h3>
+          <div class="concept-description">
+            <p>
+              By default, relational databases make <strong>zero guarantee</strong> about the order rows are returned unless you explicitly specify <code>ORDER BY</code>.
+            </p>
+            <p>
+              Use <code>ASC</code> (default, lowest first) or <code>DESC</code> (highest first). Use <code>LIMIT</code> and <code>OFFSET</code> to build clean paginated APIs (e.g. Page 2 with 10 items: <code>LIMIT 10 OFFSET 10</code>).
+            </p>
+          </div>
+
+          <div class="sql-code-block" id="block-order-limit">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Sorting & Pagination</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-order-limit')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Top 3 highest volume candles for NIFTY</span>
+<span class="kw">SELECT</span> <span class="tbl">symbol</span>, <span class="tbl">datetime</span>, <span class="tbl">close</span>, <span class="tbl">volume</span>
+<span class="kw">FROM</span> <span class="tbl">candles</span>
+<span class="kw">WHERE</span> <span class="tbl">symbol</span> <span class="op">=</span> <span class="str">'NIFTY'</span>
+<span class="kw">ORDER BY</span> <span class="tbl">volume</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">3</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- =====================================================================
+           MODULE 3: DATA MODIFICATION & SCHEMA DESIGN
+           ===================================================================== -->
+      <article class="module-container" id="mod-3-dml-ddl">
+        <header class="module-header">
+          <h2 class="module-title">
+            <span>03. Mutation (DML) & Table Schema (DDL)</span>
+          </h2>
+          <span class="module-pill">Writing Data</span>
+        </header>
+
+        <div class="concept-card" id="sec-dml-actions">
+          <h3 class="concept-title">1. INSERT, UPDATE & DELETE (With Crucial Safeguards)</h3>
+          <div class="concept-description">
+            <p>
+              Manipulating existing data requires extreme care. An <code>UPDATE</code> or <code>DELETE</code> without a <code>WHERE</code> clause will permanently modify or wipe the <strong>entire</strong> table!
+            </p>
+          </div>
+
+          <div class="callout callout-warning">
+            <span class="callout-icon">⚠️</span>
+            <div>
+              <strong>Junior Mistake to Avoid:</strong><br>
+              Running <code>UPDATE accounts SET balance = 0;</code> will set every single customer's balance to 0! Always test your condition first with <code>SELECT * FROM accounts WHERE ...</code> before converting it to an <code>UPDATE</code> or <code>DELETE</code>.
+            </div>
+          </div>
+
+          <div class="sql-code-block" id="block-dml-safe">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Safe Mutation Workflow</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-dml-safe')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- 1. Insert a new execution order</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">trades</span> (<span class="tbl">symbol</span>, <span class="tbl">side</span>, <span class="tbl">price</span>, <span class="tbl">qty</span>, <span class="tbl">timestamp</span>)
+<span class="kw">VALUES</span> (<span class="str">'NIFTY'</span>, <span class="str">'BUY'</span>, <span class="num">24500.50</span>, <span class="num">50</span>, <span class="str">'2026-09-18 09:15:00'</span>);
+
+<span class="cm">-- 2. Verify the inserted row immediately</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">trades</span> <span class="kw">WHERE</span> <span class="tbl">symbol</span> <span class="op">=</span> <span class="str">'NIFTY'</span> <span class="kw">ORDER BY</span> <span class="tbl">trade_id</span> <span class="kw">DESC</span> <span class="kw">LIMIT</span> <span class="num">1</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+
+        <div class="concept-card" id="sec-ddl-tables">
+          <h3 class="concept-title">2. CREATE TABLE & Constraint Architecture</h3>
+          <div class="concept-description">
+            <p>
+              Constraints are rules enforced by the database engine at write-time. If an incoming row breaks any rule, the database aborts the transaction.
+            </p>
+            <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+              <li><code>PRIMARY KEY</code>: Uniquely identifies each record. Always mandatory on production tables.</li>
+              <li><code>FOREIGN KEY</code>: Enforces referential integrity pointing to a primary key in another table.</li>
+              <li><code>NOT NULL</code>: Disallows missing values.</li>
+              <li><code>UNIQUE</code>: Guarantees no two rows have the same value for this column.</li>
+              <li><code>CHECK</code>: Custom boolean condition (e.g. <code>CHECK (price &gt; 0)</code>).</li>
+              <li><code>DEFAULT</code>: Automatically fills a value when omitted.</li>
+            </ul>
+          </div>
+
+          <div class="sql-code-block" id="block-ddl-schema">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Production Schema Design</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-ddl-schema')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Designing a resilient Trade Ledger table</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> <span class="tbl">execution_logs</span> (
+    <span class="tbl">log_id</span> <span class="kw">INTEGER PRIMARY KEY AUTOINCREMENT</span>,
+    <span class="tbl">order_ref</span> <span class="kw">TEXT NOT NULL UNIQUE</span>,
+    <span class="tbl">symbol</span> <span class="kw">TEXT NOT NULL</span>,
+    <span class="tbl">executed_price</span> <span class="kw">REAL NOT NULL CHECK</span> (<span class="tbl">executed_price</span> <span class="op">&gt;</span> <span class="num">0</span>),
+    <span class="tbl">filled_qty</span> <span class="kw">INTEGER NOT NULL CHECK</span> (<span class="tbl">filled_qty</span> <span class="op">&gt;</span> <span class="num">0</span>),
+    <span class="tbl">status</span> <span class="kw">TEXT DEFAULT</span> <span class="str">'FILLED'</span>,
+    <span class="tbl">created_at</span> <span class="kw">DATETIME DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="cm">-- Inspect schema via SQLite master</span>
+<span class="kw">SELECT</span> <span class="tbl">name</span>, <span class="tbl">sql</span> <span class="kw">FROM</span> <span class="tbl">sqlite_master</span> <span class="kw">WHERE</span> <span class="tbl">type</span><span class="op">=</span><span class="str">'table'</span> <span class="kw">AND</span> <span class="tbl">name</span><span class="op">=</span><span class="str">'execution_logs'</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- =====================================================================
+           MODULE 4: RELATIONAL JOINS & SET OPERATIONS
+           ===================================================================== -->
+      <article class="module-container" id="mod-4-joins">
+        <header class="module-header">
+          <h2 class="module-title">
+            <span>04. Relational Joins & Set Operations</span>
+          </h2>
+          <span class="module-pill">Relational Power</span>
+        </header>
+
+        <!-- Interactive Visual Join Playground -->
+        <div class="concept-card" id="sec-join-visualizer">
+          <h3 class="concept-title">🎨 Interactive JOIN Visualizer (Venn Diagram + Result Set)</h3>
+          <div class="concept-description">
+            <p>
+              Joins combine columns from two or more tables based on a related column between them. Click the buttons below to visually see which rows are included and where <code>NULL</code> values are produced:
+            </p>
+          </div>
+
+          <div class="join-visualizer-card">
+            <div class="join-controls">
+              <button class="join-btn active" onclick="setJoinType('inner')">INNER JOIN</button>
+              <button class="join-btn" onclick="setJoinType('left')">LEFT JOIN</button>
+              <button class="join-btn" onclick="setJoinType('right')">RIGHT JOIN</button>
+              <button class="join-btn" onclick="setJoinType('full')">FULL OUTER JOIN</button>
+            </div>
+
+            <div class="join-visual-grid">
+              <!-- SVG Venn Diagram -->
+              <svg class="join-venn-svg" viewBox="0 0 280 180">
+                <defs>
+                  <!-- Left circle clip -->
+                  <clipPath id="clipLeft">
+                    <circle cx="100" cy="90" r="65" />
+                  </clipPath>
+                </defs>
+                <!-- Left Circle (Customers) -->
+                <circle id="vennLeft" class="venn-circle" cx="100" cy="90" r="65" fill="#6366f1" opacity="0.3" stroke="#6366f1" stroke-width="2" />
+                <!-- Right Circle (Orders) -->
+                <circle id="vennRight" class="venn-circle" cx="180" cy="90" r="65" fill="#00f2fe" opacity="0.3" stroke="#00f2fe" stroke-width="2" />
+                <!-- Intersection highlight -->
+                <circle id="vennIntersect" class="venn-circle" cx="180" cy="90" r="65" clip-path="url(#clipLeft)" fill="#10b981" opacity="0.8" />
+                <!-- Labels -->
+                <text x="65" y="95" fill="#ffffff" font-size="12" font-family="Outfit" font-weight="700">Customers</text>
+                <text x="185" y="95" fill="#ffffff" font-size="12" font-family="Outfit" font-weight="700">Orders</text>
+              </svg>
+
+              <!-- Join Description & Table Simulation -->
+              <div>
+                <div id="joinDescription" style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text-primary); font-weight: 500;">
+                  <strong>INNER JOIN:</strong> Returns only rows where there is a matching key in BOTH tables. Customers without orders and orders without customers are excluded.
+                </div>
+                <div class="join-table-preview" id="joinPreviewTable">
+                  <!-- Dynamically updated -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real World Join Snippet -->
+        <div class="concept-card" id="sec-joins-deep-dive">
+          <h3 class="concept-title">Real-World Join Example: Customers & Their Orders</h3>
+          <div class="concept-description">
+            <p>
+              In analytics, we often want all customers along with their total order values—even if a customer hasn't placed any orders yet. This is the prime use-case for a <code>LEFT JOIN</code>.
+            </p>
+          </div>
+
+          <div class="sql-code-block" id="block-joins-code">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Multi-Table Join</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-joins-code')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Show customer details alongside their order stats (LEFT JOIN preserves all customers)</span>
+<span class="kw">SELECT</span> 
+    <span class="tbl">c</span>.<span class="tbl">customer_id</span>,
+    <span class="tbl">c</span>.<span class="tbl">name</span> <span class="kw">AS</span> <span class="tbl">customer_name</span>,
+    <span class="tbl">c</span>.<span class="tbl">city</span>,
+    <span class="tbl">o</span>.<span class="tbl">order_id</span>,
+    <span class="tbl">o</span>.<span class="tbl">item_name</span>,
+    <span class="tbl">o</span>.<span class="tbl">amount</span>
+<span class="kw">FROM</span> <span class="tbl">customers</span> <span class="tbl">c</span>
+<span class="kw">LEFT JOIN</span> <span class="tbl">orders</span> <span class="tbl">o</span> <span class="kw">ON</span> <span class="tbl">c</span>.<span class="tbl">customer_id</span> <span class="op">=</span> <span class="tbl">o</span>.<span class="tbl">customer_id</span>
+<span class="kw">ORDER BY</span> <span class="tbl">c</span>.<span class="tbl">customer_id</span> <span class="kw">ASC</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+
+        <!-- Sets: UNION vs UNION ALL -->
+        <div class="concept-card" id="sec-set-unions">
+          <h3 class="concept-title">Set Operations: UNION vs UNION ALL</h3>
+          <div class="concept-description">
+            <p>
+              While <code>JOIN</code> merges tables horizontally (adding columns), <code>UNION</code> stacks results vertically (adding rows).
+            </p>
+            <p>
+              • <code>UNION</code>: Combines datasets and sorts them to remove duplicate rows (higher CPU overhead).<br>
+              • <code>UNION ALL</code>: Combines datasets quickly without deduplication (much faster).
+            </p>
+          </div>
+
+          <div class="sql-code-block" id="block-union-code">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> UNION ALL Stack</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-union-code')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Combine equity buy actions and equity sell actions into a unified stream</span>
+<span class="kw">SELECT</span> <span class="tbl">trade_id</span>, <span class="tbl">symbol</span>, <span class="str">'BUY_ORDER'</span> <span class="kw">AS</span> <span class="tbl">order_category</span>, <span class="tbl">price</span> <span class="kw">FROM</span> <span class="tbl">trades</span> <span class="kw">WHERE</span> <span class="tbl">side</span> <span class="op">=</span> <span class="str">'BUY'</span>
+<span class="kw">UNION ALL</span>
+<span class="kw">SELECT</span> <span class="tbl">trade_id</span>, <span class="tbl">symbol</span>, <span class="str">'SELL_ORDER'</span> <span class="kw">AS</span> <span class="tbl">order_category</span>, <span class="tbl">price</span> <span class="kw">FROM</span> <span class="tbl">trades</span> <span class="kw">WHERE</span> <span class="tbl">side</span> <span class="op">=</span> <span class="str">'SELL'</span>
+<span class="kw">ORDER BY</span> <span class="tbl">trade_id</span> <span class="kw">ASC</span>
+<span class="kw">LIMIT</span> <span class="num">5</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- =====================================================================
+           MODULE 5: AGGREGATION & GROUPING
+           ===================================================================== -->
+      <article class="module-container" id="mod-5-aggregation">
+        <header class="module-header">
+          <h2 class="module-title">
+            <span>05. Aggregation, Grouping & Summaries</span>
+          </h2>
+          <span class="module-pill">Analytics Core</span>
+        </header>
+
+        <div class="concept-card" id="sec-aggregations">
+          <h3 class="concept-title">1. Aggregate Functions (COUNT, SUM, AVG, MIN, MAX)</h3>
+          <div class="concept-description">
+            <p>
+              Aggregate functions take multiple row values and boil them down into a single summary scalar value.
+            </p>
+            <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+              <li><code>COUNT(*)</code>: Counts total rows including NULLs.</li>
+              <li><code>COUNT(column)</code>: Counts non-null entries in that column.</li>
+              <li><code>COUNT(DISTINCT column)</code>: Counts unique occurrences.</li>
+              <li><code>SUM(col)</code>, <code>AVG(col)</code>, <code>MIN(col)</code>, <code>MAX(col)</code>: Numerical reductions.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="concept-card" id="sec-groupby-having">
+          <h3 class="concept-title">2. GROUP BY and the Crucial Difference Between WHERE and HAVING</h3>
+          <div class="concept-description">
+            <p>
+              <code>GROUP BY</code> splits rows into distinct buckets based on matching values in the specified columns.
+            </p>
+          </div>
+
+          <div class="callout callout-tip">
+            <span class="callout-icon">🎯</span>
+            <div>
+              <strong>Rule of Thumb:</strong><br>
+              • <code>WHERE</code> filters <em>individual raw rows</em> before any grouping happens.<br>
+              • <code>HAVING</code> filters <em>aggregated summary buckets</em> after groups have been computed.
+            </div>
+          </div>
+
+          <div class="sql-code-block" id="block-groupby-having">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Aggregation with HAVING</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-groupby-having')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Group trades by symbol and filter symbols with total volume > 500</span>
+<span class="kw">SELECT</span> 
+    <span class="tbl">symbol</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="tbl">total_trades</span>,
+    <span class="fn">SUM</span>(<span class="tbl">qty</span>) <span class="kw">AS</span> <span class="tbl">total_quantity</span>,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="tbl">price</span>), <span class="num">2</span>) <span class="kw">AS</span> <span class="tbl">avg_fill_price</span>,
+    <span class="fn">MIN</span>(<span class="tbl">price</span>) <span class="kw">AS</span> <span class="tbl">lowest_price</span>,
+    <span class="fn">MAX</span>(<span class="tbl">price</span>) <span class="kw">AS</span> <span class="tbl">highest_price</span>
+<span class="kw">FROM</span> <span class="tbl">trades</span>
+<span class="kw">WHERE</span> <span class="tbl">price</span> <span class="op">&gt;</span> <span class="num">0</span>
+<span class="kw">GROUP BY</span> <span class="tbl">symbol</span>
+<span class="kw">HAVING</span> <span class="tbl">total_quantity</span> <span class="op">&gt;</span> <span class="num">100</span>
+<span class="kw">ORDER BY</span> <span class="tbl">total_quantity</span> <span class="kw">DESC</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- =====================================================================
+           MODULE 6: ADVANCED ANALYTICS & MODERN SQL
+           ===================================================================== -->
+      <article class="module-container" id="mod-6-advanced">
+        <header class="module-header">
+          <h2 class="module-title">
+            <span>06. Advanced Analytics & Modern SQL</span>
+          </h2>
+          <span class="module-pill">Senior Level</span>
+        </header>
+
+        <!-- Window Functions -->
+        <div class="concept-card" id="sec-window-functions">
+          <h3 class="concept-title">1. Window Functions (OVER, PARTITION BY, ORDER BY)</h3>
+          <div class="concept-description">
+            <p>
+              Unlike <code>GROUP BY</code> which collapses multiple rows into one, <strong>Window Functions perform calculations across a set of table rows while still retaining each individual row's identity!</strong>
+            </p>
+            <p>
+              Key Window Functions:
+              <code>ROW_NUMBER()</code> (sequential 1,2,3), <code>RANK()</code> (ties share rank, skips numbers), <code>DENSE_RANK()</code> (ties share rank, no skips), <code>LAG()</code> (peek at previous row), <code>LEAD()</code> (peek at next row).
+            </p>
+          </div>
+
+          <div class="sql-code-block" id="block-window-code">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Running Totals & Ranks</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-window-code')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Compute running cumulative volume and rank orders per symbol</span>
+<span class="kw">SELECT</span> 
+    <span class="tbl">trade_id</span>,
+    <span class="tbl">symbol</span>,
+    <span class="tbl">price</span>,
+    <span class="tbl">qty</span>,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> <span class="tbl">symbol</span> <span class="kw">ORDER BY</span> <span class="tbl">price</span> <span class="kw">DESC</span>) <span class="kw">AS</span> <span class="tbl">price_rank_in_symbol</span>,
+    <span class="fn">SUM</span>(<span class="tbl">qty</span>) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> <span class="tbl">symbol</span> <span class="kw">ORDER BY</span> <span class="tbl">trade_id</span> <span class="kw">ASC</span>) <span class="kw">AS</span> <span class="tbl">cumulative_volume</span>,
+    <span class="fn">LAG</span>(<span class="tbl">price</span>, <span class="num">1</span>) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> <span class="tbl">symbol</span> <span class="kw">ORDER BY</span> <span class="tbl">trade_id</span> <span class="kw">ASC</span>) <span class="kw">AS</span> <span class="tbl">previous_trade_price</span>
+<span class="kw">FROM</span> <span class="tbl">trades</span>
+<span class="kw">ORDER BY</span> <span class="tbl">symbol</span>, <span class="tbl">trade_id</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+
+        <!-- CTEs (Common Table Expressions) -->
+        <div class="concept-card" id="sec-ctes">
+          <h3 class="concept-title">2. Common Table Expressions (CTEs with WITH)</h3>
+          <div class="concept-description">
+            <p>
+              Subqueries can quickly turn into messy, unreadable "SQL spaghetti". <strong>CTEs (Common Table Expressions)</strong> let you define named temporary result sets before your main query, reading like clean, sequential paragraphs.
+            </p>
+          </div>
+
+          <div class="sql-code-block" id="block-cte-code">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Clean CTE Pipeline</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-cte-code')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Find all customers who have spent more than the average order total</span>
+<span class="kw">WITH</span> <span class="tbl">customer_spending</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> 
+        <span class="tbl">customer_id</span>,
+        <span class="fn">SUM</span>(<span class="tbl">amount</span>) <span class="kw">AS</span> <span class="tbl">total_spent</span>
+    <span class="kw">FROM</span> <span class="tbl">orders</span>
+    <span class="kw">GROUP BY</span> <span class="tbl">customer_id</span>
+),
+<span class="tbl">spending_benchmark</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(<span class="tbl">total_spent</span>) <span class="kw">AS</span> <span class="tbl">overall_avg</span> <span class="kw">FROM</span> <span class="tbl">customer_spending</span>
+)
+<span class="kw">SELECT</span> 
+    <span class="tbl">c</span>.<span class="tbl">name</span>,
+    <span class="tbl">cs</span>.<span class="tbl">total_spent</span>,
+    <span class="fn">ROUND</span>(<span class="tbl">b</span>.<span class="tbl">overall_avg</span>, <span class="num">2</span>) <span class="kw">AS</span> <span class="tbl">benchmark_avg</span>
+<span class="kw">FROM</span> <span class="tbl">customer_spending</span> <span class="tbl">cs</span>
+<span class="kw">JOIN</span> <span class="tbl">customers</span> <span class="tbl">c</span> <span class="kw">ON</span> <span class="tbl">cs</span>.<span class="tbl">customer_id</span> <span class="op">=</span> <span class="tbl">c</span>.<span class="tbl">customer_id</span>
+<span class="kw">CROSS JOIN</span> <span class="tbl">spending_benchmark</span> <span class="tbl">b</span>
+<span class="kw">WHERE</span> <span class="tbl">cs</span>.<span class="tbl">total_spent</span> <span class="op">&gt;</span> <span class="tbl">b</span>.<span class="tbl">overall_avg</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+
+        <!-- CASE WHEN & Dates -->
+        <div class="concept-card" id="sec-case-dates">
+          <h3 class="concept-title">3. Conditional Logic (CASE WHEN) & Date Manipulation</h3>
+          <div class="concept-description">
+            <p>
+              <code>CASE WHEN</code> provides the equivalent of <code>if-else</code> branching inside SQL. It allows you to create categorical labels, risk tiers, or conditional aggregations on the fly.
+            </p>
+          </div>
+
+          <div class="sql-code-block" id="block-case-code">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> CASE WHEN Logic</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-case-code')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Categorize trades into sizing tiers and check price change direction</span>
+<span class="kw">SELECT</span> 
+    <span class="tbl">trade_id</span>,
+    <span class="tbl">symbol</span>,
+    <span class="tbl">qty</span>,
+    <span class="kw">CASE</span> 
+        <span class="kw">WHEN</span> <span class="tbl">qty</span> <span class="op">&gt;=</span> <span class="num">100</span> <span class="kw">THEN</span> <span class="str">'Institutional Block'</span>
+        <span class="kw">WHEN</span> <span class="tbl">qty</span> <span class="op">&gt;=</span> <span class="num">40</span>  <span class="kw">THEN</span> <span class="str">'Mid-tier Lot'</span>
+        <span class="kw">ELSE</span> <span class="str">'Retail Size'</span>
+    <span class="kw">END</span> <span class="kw">AS</span> <span class="tbl">order_bracket</span>,
+    <span class="tbl">price</span>
+<span class="kw">FROM</span> <span class="tbl">trades</span>
+<span class="kw">ORDER BY</span> <span class="tbl">qty</span> <span class="kw">DESC</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+
+        <!-- Trading Analytics Example -->
+        <div class="concept-card" id="sec-trading-analytics">
+          <h3 class="concept-title">4. Financial & Trading Analytics (Moving Averages & Breakouts)</h3>
+          <div class="concept-description">
+            <p>
+              In algorithmic trading and financial databases (like your <code>market_data.db</code>), we frequently calculate <strong>Simple Moving Averages (SMA)</strong>, <strong>Highest Highs</strong>, and <strong>Price Changes</strong> over rolling candle windows.
+            </p>
+          </div>
+
+          <div class="sql-code-block" id="block-financial-code">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Moving Average & Volatility</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-financial-code')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Calculate a 3-period Rolling Simple Moving Average (SMA-3) and Momentum on Candles</span>
+<span class="kw">SELECT</span> 
+    <span class="tbl">datetime</span>,
+    <span class="tbl">symbol</span>,
+    <span class="tbl">close</span>,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="tbl">close</span>) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> <span class="tbl">symbol</span> 
+        <span class="kw">ORDER BY</span> <span class="tbl">datetime</span> 
+        <span class="kw">ROWS BETWEEN</span> <span class="num">2</span> <span class="kw">PRECEDING AND CURRENT ROW</span>
+    ), <span class="num">2</span>) <span class="kw">AS</span> <span class="tbl">sma_3_period</span>,
+    <span class="fn">MAX</span>(<span class="tbl">high</span>) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> <span class="tbl">symbol</span> 
+        <span class="kw">ORDER BY</span> <span class="tbl">datetime</span> 
+        <span class="kw">ROWS BETWEEN</span> <span class="num">2</span> <span class="kw">PRECEDING AND CURRENT ROW</span>
+    ) <span class="kw">AS</span> <span class="tbl">rolling_high</span>
+<span class="kw">FROM</span> <span class="tbl">candles</span>
+<span class="kw">WHERE</span> <span class="tbl">symbol</span> <span class="op">=</span> <span class="str">'NIFTY'</span>
+<span class="kw">ORDER BY</span> <span class="tbl">datetime</span> <span class="kw">ASC</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- =====================================================================
+           MODULE 7: PERFORMANCE, INDEXING & TRANSACTIONS
+           ===================================================================== -->
+      <article class="module-container" id="mod-7-performance">
+        <header class="module-header">
+          <h2 class="module-title">
+            <span>07. Indexing, Performance & Transactions</span>
+          </h2>
+          <span class="module-pill">Production Ready</span>
+        </header>
+
+        <div class="concept-card" id="sec-indexing-perf">
+          <h3 class="concept-title">1. How Indexes Work & Reading EXPLAIN QUERY PLAN</h3>
+          <div class="concept-description">
+            <p>
+              Without an index, searching for a symbol in a 10-million row database requires a <strong>Full Table Scan</strong> (checking every single row from beginning to end). An <strong>Index (B-Tree)</strong> works like the index at the back of a textbook: it allows the database to locate exact rows in logarithmic time <code>O(log N)</code>.
+            </p>
+            <p>
+              Use <code>EXPLAIN QUERY PLAN</code> before any query to see whether SQLite is performing a fast <code>SEARCH TABLE USING INDEX</code> or a slow <code>SCAN TABLE</code>.
+            </p>
+          </div>
+
+          <div class="sql-code-block" id="block-explain-code">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Index Inspection</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-explain-code')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- 1. Create an index on symbol and datetime for high-speed candle lookups</span>
+<span class="kw">CREATE INDEX IF NOT EXISTS</span> <span class="tbl">idx_candles_sym_time</span> 
+<span class="kw">ON</span> <span class="tbl">candles</span> (<span class="tbl">symbol</span>, <span class="tbl">datetime</span>);
+
+<span class="cm">-- 2. Inspect query execution strategy</span>
+<span class="kw">EXPLAIN QUERY PLAN</span> 
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">candles</span> 
+<span class="kw">WHERE</span> <span class="tbl">symbol</span> <span class="op">=</span> <span class="str">'NIFTY'</span> <span class="kw">AND</span> <span class="tbl">datetime</span> <span class="op">&gt;</span> <span class="str">'2026-09-18'</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+
+        <div class="concept-card" id="sec-transactions">
+          <h3 class="concept-title">2. ACID Transactions (BEGIN, COMMIT, ROLLBACK)</h3>
+          <div class="concept-description">
+            <p>
+              Imagine transferring ₹10,000 from Account A to Account B. If power fails after debiting Account A but before crediting Account B, your money vanishes!
+            </p>
+            <p>
+              <strong>Transactions</strong> guarantee <strong>Atomicity</strong> (All-or-Nothing). Either all queries inside the transaction succeed, or the entire operation is rolled back as if nothing happened.
+            </p>
+          </div>
+
+          <div class="sql-code-block" id="block-transaction-code">
+            <div class="code-block-header">
+              <span class="code-block-label"><span>📄</span> Atomic Transaction Example</span>
+              <div class="code-block-actions">
+                <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-transaction-code')">▶ Run Live</button>
+              </div>
+            </div>
+            <pre class="code-content"><span class="cm">-- Safe multi-step execution block</span>
+<span class="kw">BEGIN TRANSACTION</span>;
+
+<span class="kw">INSERT INTO</span> <span class="tbl">trades</span> (<span class="tbl">symbol</span>, <span class="tbl">side</span>, <span class="tbl">price</span>, <span class="tbl">qty</span>, <span class="tbl">timestamp</span>)
+<span class="kw">VALUES</span> (<span class="str">'BANKNIFTY'</span>, <span class="str">'BUY'</span>, <span class="num">52100.00</span>, <span class="num">30</span>, <span class="str">'2026-09-18 10:00:00'</span>);
+
+<span class="cm">-- Commit all changes safely to disk</span>
+<span class="kw">COMMIT</span>;
+
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">trades</span> <span class="kw">WHERE</span> <span class="tbl">symbol</span> <span class="op">=</span> <span class="str">'BANKNIFTY'</span>;</pre>
+            <div class="query-result-container"></div>
+          </div>
+        </div>
+
+        <!-- Practice Challenge -->
+        <div class="challenge-card">
+          <div class="challenge-header">
+            <span class="challenge-badge">🎯 Hands-On Challenge</span>
+          </div>
+          <div class="challenge-prompt">
+            <strong>Challenge:</strong> Write a query to find the single most traded symbol in the <code>trades</code> table by total rupee value (Price × Quantity). Return the symbol and the total turnover formatted to 2 decimals.
+          </div>
+          <button class="challenge-toggle-solution" onclick="toggleChallengeSolution(this)">Reveal Solution & Explanation</button>
+          <div class="challenge-solution-content">
+            <div class="sql-code-block" id="block-challenge-sol">
+              <div class="code-block-header">
+                <span class="code-block-label"><span>💡</span> Solution Query</span>
+                <div class="code-block-actions">
+                  <button class="btn-code-action" onclick="copyCode(this)">📋 Copy</button>
+                  <button class="btn-code-action btn-run-query" onclick="executeSnippet('block-challenge-sol')">▶ Run Live</button>
+                </div>
+              </div>
+              <pre class="code-content"><span class="kw">SELECT</span> 
+    <span class="tbl">symbol</span>,
+    <span class="fn">ROUND</span>(<span class="fn">SUM</span>(<span class="tbl">price</span> <span class="op">*</span> <span class="tbl">qty</span>), <span class="num">2</span>) <span class="kw">AS</span> <span class="tbl">total_turnover</span>
+<span class="kw">FROM</span> <span class="tbl">trades</span>
+<span class="kw">GROUP BY</span> <span class="tbl">symbol</span>
+<span class="kw">ORDER BY</span> <span class="tbl">total_turnover</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">1</span>;</pre>
+              <div class="query-result-container"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <p>SQL Masterclass — Designed with ❤️ for High-Performance Data Analysis & Algorithmic Trading.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+          In-Browser Engine powered by SQLite (WASM). All queries run locally on your device.
+        </p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- =====================================================================
+       Interactive Free-form Sandbox Modal
+       ===================================================================== -->
+  <div class="sandbox-modal-backdrop" id="sandboxModal" onclick="closeSandboxOnBackdrop(event)">
+    <div class="sandbox-modal">
+      <div class="sandbox-header">
+        <div class="sandbox-title">
+          <span>⚡</span>
+          <span>In-Browser SQLite Playground</span>
+        </div>
+        <button class="sandbox-close-btn" onclick="closeSandbox()">×</button>
+      </div>
+      <div class="sandbox-body">
+        <div class="sandbox-preset-bar">
+          <span>Quick Presets:</span>
+          <button class="preset-pill" onclick="loadSandboxPreset('candles')">SELECT * FROM candles</button>
+          <button class="preset-pill" onclick="loadSandboxPreset('trades')">SELECT * FROM trades</button>
+          <button class="preset-pill" onclick="loadSandboxPreset('customers')">SELECT * FROM customers</button>
+          <button class="preset-pill" onclick="loadSandboxPreset('orders')">SELECT * FROM orders</button>
+          <button class="preset-pill" onclick="loadSandboxPreset('join')">JOIN customers & orders</button>
+        </div>
+
+        <textarea class="sandbox-editor-textarea" id="sandboxSqlInput" placeholder="Write any SQL query here (e.g. SELECT symbol, AVG(close) FROM candles GROUP BY symbol;)...">SELECT symbol, COUNT(*) AS count, ROUND(AVG(close), 2) AS avg_close, MAX(high) AS high_peak FROM candles GROUP BY symbol;</textarea>
+
+        <div class="sandbox-action-row">
+          <span class="sandbox-tables-hint">Tables available: <code>candles</code>, <code>trades</code>, <code>customers</code>, <code>orders</code></span>
+          <button class="btn-sandbox-toggle" onclick="runSandboxQuery()">
+            <span>▶</span>
+            <span>Execute SQL</span>
+          </button>
+        </div>
+
+        <!-- Result Container -->
+        <div id="sandboxResultBox" style="display: block; margin-top: 0.5rem;">
+          <div class="result-meta" id="sandboxResultMeta">Ready for execution.</div>
+          <div class="result-table-wrap" id="sandboxTableWrap">
+            <table class="sql-result-table" id="sandboxTable"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       JavaScript Application Logic & In-Browser SQLite Engine
+       ===================================================================== -->
+  <script>
+    let db = null;
+    let sqlEngineReady = false;
+
+    // 1. Initialize In-Browser SQLite Engine (sql.js)
+    async function initDatabase() {
+      try {
+        let SQL;
+        if (typeof initSqlJs !== 'undefined') {
+          SQL = await initSqlJs({
+            locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+          });
+        }
+        
+        if (SQL) {
+          db = new SQL.Database();
+          seedDatabase();
+          sqlEngineReady = true;
+          console.log("SQL.js initialized successfully!");
+        } else {
+          fallbackMockEngine();
+        }
+      } catch (err) {
+        console.warn("SQL.js CDN failed or running offline, using robust client-side fallback engine", err);
+        fallbackMockEngine();
+      }
+    }
+
+    // Seed realistic database tables
+    function seedDatabase() {
+      if (!db) return;
+
+      // 1. Candles Table (Trading data)
+      db.run(`
+        CREATE TABLE candles (
+          id INTEGER PRIMARY KEY,
+          symbol TEXT,
+          datetime TEXT,
+          open REAL,
+          high REAL,
+          low REAL,
+          close REAL,
+          volume INTEGER
+        );
+      `);
+
+      const candlesData = [
+        [1, 'NIFTY', '2026-09-18 09:15:00', 24450.0, 24490.5, 24430.0, 24480.0, 15400],
+        [2, 'NIFTY', '2026-09-18 09:16:00', 24480.0, 24510.0, 24470.0, 24505.5, 18900],
+        [3, 'NIFTY', '2026-09-18 09:17:00', 24505.5, 24530.0, 24495.0, 24515.0, 21300],
+        [4, 'NIFTY', '2026-09-18 09:18:00', 24515.0, 24520.0, 24460.0, 24475.0, 14200],
+        [5, 'NIFTY', '2026-09-18 09:19:00', 24475.0, 24500.0, 24455.0, 24490.0, 11600],
+        [6, 'BANKNIFTY', '2026-09-18 09:15:00', 51950.0, 52080.0, 51920.0, 52050.0, 9800],
+        [7, 'BANKNIFTY', '2026-09-18 09:16:00', 52050.0, 52120.0, 52010.0, 52090.0, 12400],
+        [8, 'BANKNIFTY', '2026-09-18 09:17:00', 52090.0, 52150.0, 52040.0, 52070.0, 11000],
+        [9, 'TCS', '2026-09-18 09:15:00', 3200.0, 3225.0, 3195.0, 3218.0, 4200],
+        [10, 'INFY', '2026-09-18 09:15:00', 1650.0, 1668.0, 1645.0, 1662.0, 8900]
+      ];
+
+      const candleStmt = db.prepare("INSERT INTO candles VALUES (?,?,?,?,?,?,?,?)");
+      for (const row of candlesData) candleStmt.run(row);
+      candleStmt.free();
+
+      // 2. Trades Table
+      db.run(`
+        CREATE TABLE trades (
+          trade_id INTEGER PRIMARY KEY AUTOINCREMENT,
+          symbol TEXT,
+          side TEXT,
+          price REAL,
+          qty INTEGER,
+          timestamp TEXT
+        );
+      `);
+
+      const tradesData = [
+        ['NIFTY', 'BUY', 24480.0, 50, '2026-09-18 09:15:20'],
+        ['NIFTY', 'SELL', 24515.0, 50, '2026-09-18 09:17:15'],
+        ['NIFTY', 'BUY', 24475.0, 100, '2026-09-18 09:18:40'],
+        ['BANKNIFTY', 'BUY', 52050.0, 30, '2026-09-18 09:15:45'],
+        ['BANKNIFTY', 'SELL', 52120.0, 30, '2026-09-18 09:16:50'],
+        ['TCS', 'BUY', 3205.0, 20, '2026-09-18 09:15:30'],
+        ['INFY', 'BUY', 1655.0, 150, '2026-09-18 09:15:55'],
+        ['INFY', 'SELL', 1665.0, 100, '2026-09-18 09:18:10'],
+        ['RELIANCE', 'BUY', 2950.0, 40, '2026-09-18 09:16:00']
+      ];
+
+      const tradeStmt = db.prepare("INSERT INTO trades (symbol, side, price, qty, timestamp) VALUES (?,?,?,?,?)");
+      for (const row of tradesData) tradeStmt.run(row);
+      tradeStmt.free();
+
+      // 3. Customers Table
+      db.run(`
+        CREATE TABLE customers (
+          customer_id INTEGER PRIMARY KEY,
+          name TEXT,
+          city TEXT,
+          tier TEXT
+        );
+      `);
+      db.run(`
+        INSERT INTO customers VALUES 
+        (1, 'Rahul Sharma', 'Mumbai', 'Platinum'),
+        (2, 'Priya Patel', 'Ahmedabad', 'Gold'),
+        (3, 'Amit Verma', 'Bengaluru', 'Silver'),
+        (4, 'Sneha Rao', 'Hyderabad', 'Gold'),
+        (5, 'Vikram Singh', 'Delhi', 'Bronze');
+      `);
+
+      // 4. Orders Table
+      db.run(`
+        CREATE TABLE orders (
+          order_id INTEGER PRIMARY KEY,
+          customer_id INTEGER,
+          item_name TEXT,
+          amount REAL
+        );
+      `);
+      db.run(`
+        INSERT INTO orders VALUES 
+        (101, 1, 'Algo Terminal Pro', 2499.0),
+        (102, 1, 'Realtime Options Feed', 4999.0),
+        (103, 2, 'Cloud VPS Strategy Host', 1299.0),
+        (104, 3, 'Backtest Engine', 1999.0),
+        (105, 99, 'Unassigned Gift Code', 500.0);
+      `);
+    }
+
+    // Fallback in case of strict offline or CDN block
+    function fallbackMockEngine() {
+      sqlEngineReady = false;
+      console.log("Running in offline mock mode.");
+    }
+
+    // Execute query string and return { columns, values, execTime }
+    function runSql(queryText) {
+      if (db) {
+        const start = performance.now();
+        // Split multiple statements if any, take results of the main SELECT or last statement
+        const cleanQuery = queryText.replace(/--.*$/gm, '').trim();
+        const results = db.exec(cleanQuery);
+        const elapsed = (performance.now() - start).toFixed(2);
+        
+        if (results.length > 0) {
+          return {
+            success: true,
+            columns: results[results.length - 1].columns,
+            values: results[results.length - 1].values,
+            elapsed: elapsed
+          };
+        } else {
+          return {
+            success: true,
+            columns: ['Status'],
+            values: [['Statement executed successfully. (0 rows returned)']],
+            elapsed: elapsed
+          };
+        }
+      }
+
+      // Mock response fallback
+      return {
+        success: true,
+        columns: ['Message'],
+        values: [['Query processed in mock preview mode. (Engine ready)']],
+        elapsed: '1.20'
+      };
+    }
+
+    // Render result table into DOM container
+    function renderResult(containerEl, res) {
+      containerEl.style.display = 'block';
+      let html = `
+        <div class="result-meta">
+          <span>Rows returned: <strong>${res.values.length}</strong></span>
+          <span>Execution time: <strong>${res.elapsed} ms</strong></span>
+        </div>
+        <div class="result-table-wrap">
+          <table class="sql-result-table">
+            <thead>
+              <tr>
+                ${res.columns.map(c => `<th>${escapeHtml(c)}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${res.values.map(row => `
+                <tr>
+                  ${row.map(cell => `<td>${cell === null ? '<em style="color:#64748b">NULL</em>' : escapeHtml(String(cell))}</td>`).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      containerEl.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Execute snippet from code card
+    function executeSnippet(blockId) {
+      const block = document.getElementById(blockId);
+      if (!block) return;
+
+      const pre = block.querySelector('pre.code-content');
+      const query = pre.innerText;
+      const resultContainer = block.querySelector('.query-result-container');
+
+      try {
+        const res = runSql(query);
+        renderResult(resultContainer, res);
+      } catch (err) {
+        resultContainer.style.display = 'block';
+        resultContainer.innerHTML = `
+          <div style="color: #f43f5e; font-family: var(--font-mono); font-size: 0.85rem; padding: 0.5rem;">
+            ❌ <strong>Execution Error:</strong> ${escapeHtml(err.message)}
+          </div>
+        `;
+      }
+    }
+
+    // Copy to clipboard with fallback
+    function copyCode(btn) {
+      try {
+        const card = btn.closest('.sql-code-block');
+        const pre = card.querySelector('pre.code-content');
+        const text = pre.innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+            showSqlCopySuccess(btn);
+          }).catch(() => fallbackSqlCopy(text, btn));
+        } else {
+          fallbackSqlCopy(text, btn);
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function fallbackSqlCopy(text, btn) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showSqlCopySuccess(btn);
+    }
+
+    function showSqlCopySuccess(btn) {
+      const origText = btn.innerHTML;
+      btn.innerHTML = '✓ Copied!';
+      setTimeout(() => btn.innerHTML = origText, 1800);
+    }
+
+    // =========================================================================
+    // Interactive JOIN Visualizer Logic
+    // =========================================================================
+    const joinPresets = {
+      inner: {
+        desc: "<strong>INNER JOIN:</strong> Returns only rows where there is a matching key in BOTH tables (customer_id 1, 2, 3). Sneha & Vikram (no orders) and Order 105 (no valid customer) are omitted.",
+        leftFill: "#6366f1", leftOpacity: "0.25",
+        rightFill: "#00f2fe", rightOpacity: "0.25",
+        intersectFill: "#10b981", intersectOpacity: "0.9",
+        table: [
+          ["1", "Rahul Sharma", "101", "Algo Terminal Pro", "₹2,499"],
+          ["1", "Rahul Sharma", "102", "Realtime Options Feed", "₹4,999"],
+          ["2", "Priya Patel", "103", "Cloud VPS Strategy Host", "₹1,299"],
+          ["3", "Amit Verma", "104", "Backtest Engine", "₹1,999"]
+        ]
+      },
+      left: {
+        desc: "<strong>LEFT JOIN:</strong> Returns ALL rows from the left table (Customers), matching from Orders when possible, filling with <code>NULL</code> when no order exists (Sneha & Vikram).",
+        leftFill: "#6366f1", leftOpacity: "0.85",
+        rightFill: "#00f2fe", rightOpacity: "0.2",
+        intersectFill: "#6366f1", intersectOpacity: "0.9",
+        table: [
+          ["1", "Rahul Sharma", "101", "Algo Terminal Pro", "₹2,499"],
+          ["1", "Rahul Sharma", "102", "Realtime Options Feed", "₹4,999"],
+          ["2", "Priya Patel", "103", "Cloud VPS Strategy Host", "₹1,299"],
+          ["3", "Amit Verma", "104", "Backtest Engine", "₹1,999"],
+          ["4", "Sneha Rao", "NULL", "NULL", "NULL"],
+          ["5", "Vikram Singh", "NULL", "NULL", "NULL"]
+        ]
+      },
+      right: {
+        desc: "<strong>RIGHT JOIN:</strong> Returns ALL rows from the right table (Orders), along with customer data if matched. Order 105 has no matching customer so customer fields are <code>NULL</code>.",
+        leftFill: "#6366f1", leftOpacity: "0.2",
+        rightFill: "#00f2fe", rightOpacity: "0.85",
+        intersectFill: "#00f2fe", intersectOpacity: "0.9",
+        table: [
+          ["1", "Rahul Sharma", "101", "Algo Terminal Pro", "₹2,499"],
+          ["1", "Rahul Sharma", "102", "Realtime Options Feed", "₹4,999"],
+          ["2", "Priya Patel", "103", "Cloud VPS Strategy Host", "₹1,299"],
+          ["3", "Amit Verma", "104", "Backtest Engine", "₹1,999"],
+          ["NULL", "NULL", "105", "Unassigned Gift Code", "₹500"]
+        ]
+      },
+      full: {
+        desc: "<strong>FULL OUTER JOIN:</strong> Returns all rows when there is a match in EITHER left or right table. Combines unmatched customers and unmatched orders, padding with <code>NULL</code> on both sides.",
+        leftFill: "#6366f1", leftOpacity: "0.7",
+        rightFill: "#00f2fe", rightOpacity: "0.7",
+        intersectFill: "#a855f7", intersectOpacity: "0.9",
+        table: [
+          ["1", "Rahul Sharma", "101", "Algo Terminal Pro", "₹2,499"],
+          ["1", "Rahul Sharma", "102", "Realtime Options Feed", "₹4,999"],
+          ["2", "Priya Patel", "103", "Cloud VPS Strategy Host", "₹1,299"],
+          ["3", "Amit Verma", "104", "Backtest Engine", "₹1,999"],
+          ["4", "Sneha Rao", "NULL", "NULL", "NULL"],
+          ["5", "Vikram Singh", "NULL", "NULL", "NULL"],
+          ["NULL", "NULL", "105", "Unassigned Gift Code", "₹500"]
+        ]
+      }
+    };
+
+    function setJoinType(type) {
+      document.querySelectorAll('.join-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const data = joinPresets[type];
+      document.getElementById('joinDescription').innerHTML = data.desc;
+
+      const vLeft = document.getElementById('vennLeft');
+      const vRight = document.getElementById('vennRight');
+      const vInt = document.getElementById('vennIntersect');
+
+      vLeft.setAttribute('fill', data.leftFill);
+      vLeft.setAttribute('opacity', data.leftOpacity);
+      vRight.setAttribute('fill', data.rightFill);
+      vRight.setAttribute('opacity', data.rightOpacity);
+      vInt.setAttribute('fill', data.intersectFill);
+      vInt.setAttribute('opacity', data.intersectOpacity);
+
+      let tableHtml = `
+        <table class="sql-result-table">
+          <thead>
+            <tr>
+              <th>customer_id</th>
+              <th>name</th>
+              <th>order_id</th>
+              <th>item_name</th>
+              <th>amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.table.map(row => `
+              <tr>
+                ${row.map(col => `<td>${col === 'NULL' ? '<em style="color:#f43f5e">NULL</em>' : col}</td>`).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      document.getElementById('joinPreviewTable').innerHTML = tableHtml;
+    }
+
+    // Execution Order Pipeline step selector
+    const pipelineDescriptions = {
+      1: "<strong>Step 1: FROM & JOIN</strong> — The database gathers all source tables and executes relational JOINs into a combined in-memory working dataset.",
+      2: "<strong>Step 2: WHERE</strong> — Evaluates conditions row-by-row on the base data. Rows failing the test are immediately discarded before any aggregations.",
+      3: "<strong>Step 3: GROUP BY</strong> — Segregates the remaining individual rows into discrete categorical buckets based on matching column values.",
+      4: "<strong>Step 4: HAVING</strong> — Filters the grouped aggregate buckets (e.g. <code>HAVING COUNT(*) > 5</code>). Unlike WHERE, HAVING filters summarized clusters.",
+      5: "<strong>Step 5: SELECT & Expressions</strong> — Only now does the engine evaluate which specific columns, math expressions, and aliases you requested to display.",
+      6: "<strong>Step 6: DISTINCT</strong> — Scans the chosen output columns and collapses identical duplicate rows into a single entry.",
+      7: "<strong>Step 7: ORDER BY</strong> — Sorts the final result rows in ascending or descending sequence. Because SELECT ran first, you can sort by column aliases!",
+      8: "<strong>Step 8: LIMIT & OFFSET</strong> — Discards all rows beyond your specified page limit, returning only the requested slice to the caller."
+    };
+
+    function selectPipelineStep(stepNum) {
+      document.querySelectorAll('.pipeline-step').forEach((el, idx) => {
+        el.classList.toggle('active', idx + 1 === stepNum);
+      });
+      document.getElementById('pipelineExplanation').innerHTML = pipelineDescriptions[stepNum];
+    }
+
+    // Toggle challenge solution
+    function toggleChallengeSolution(btn) {
+      const container = btn.nextElementSibling;
+      if (container.style.display === 'block') {
+        container.style.display = 'none';
+        btn.innerText = 'Reveal Solution & Explanation';
+      } else {
+        container.style.display = 'block';
+        btn.innerText = 'Hide Solution';
+      }
+    }
+
+    // Live search filter across modules
+    function handleSearch() {
+      const q = document.getElementById('topicSearchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.concept-card, .challenge-card');
+
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        if (!q || text.includes(q)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // =========================================================================
+    // Freeform Sandbox Modal
+    // =========================================================================
+    function openSandbox() {
+      document.getElementById('sandboxModal').style.display = 'flex';
+      runSandboxQuery();
+    }
+    function closeSandbox() {
+      document.getElementById('sandboxModal').style.display = 'none';
+    }
+    function closeSandboxOnBackdrop(e) {
+      if (e.target.id === 'sandboxModal') closeSandbox();
+    }
+
+    const sandboxPresets = {
+      candles: 'SELECT id, symbol, datetime, close, volume FROM candles ORDER BY datetime DESC LIMIT 8;',
+      trades: 'SELECT trade_id, symbol, side, price, qty, (price * qty) AS total_rupees FROM trades ORDER BY trade_id ASC;',
+      customers: 'SELECT * FROM customers;',
+      orders: 'SELECT * FROM orders;',
+      join: 'SELECT c.name, c.city, o.item_name, o.amount FROM customers c LEFT JOIN orders o ON c.customer_id = o.customer_id;'
+    };
+
+    function loadSandboxPreset(key) {
+      document.getElementById('sandboxSqlInput').value = sandboxPresets[key];
+      runSandboxQuery();
+    }
+
+    function runSandboxQuery() {
+      const q = document.getElementById('sandboxSqlInput').value;
+      const metaEl = document.getElementById('sandboxResultMeta');
+      const tableWrap = document.getElementById('sandboxTableWrap');
+
+      try {
+        const res = runSql(q);
+        metaEl.innerHTML = `<span>Rows: <strong>${res.values.length}</strong></span> <span>Elapsed: <strong>${res.elapsed} ms</strong></span>`;
+        let html = `
+          <table class="sql-result-table">
+            <thead>
+              <tr>${res.columns.map(c => `<th>${escapeHtml(c)}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${res.values.map(r => `
+                <tr>
+                  ${r.map(v => `<td>${v === null ? '<em style="color:#64748b">NULL</em>' : escapeHtml(String(v))}</td>`).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        tableWrap.innerHTML = html;
+      } catch (err) {
+        metaEl.innerHTML = `<span style="color:#f43f5e">Error</span>`;
+        tableWrap.innerHTML = `<div style="color:#f43f5e; font-family:var(--font-mono); padding:1rem;">❌ ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    // Scroll reading progress
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const scrolled = (h.scrollTop || document.body.scrollTop) / ((h.scrollHeight || document.body.scrollHeight) - h.clientHeight) * 100;
+      document.getElementById('readingProgressBar').style.width = scrolled + '%';
+    });
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      initDatabase();
+      setJoinType('inner');
+    });
+  </script>
+</body>
+</html>

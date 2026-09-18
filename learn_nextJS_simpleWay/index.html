@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Next.js Tutorial — Learn Next.js Step by Step (App Router & Server Components)</title>
+  <meta name="description" content="The ultimate step-by-step Next.js tutorial for beginners. Inspired by TutorialsPoint & W3Schools clarity. Learn App Router, Server Components, SSR, SSG, ISR, Route Handlers, and Server Actions with interactive visual simulators.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #000000;
+      --bg-surface: #0a0a0a;
+      --bg-card: #111111;
+      --bg-card-hover: #171717;
+      --bg-code: #050505;
+      --border-subtle: #222222;
+      --border-highlight: #333333;
+
+      --next-white: #ffffff;
+      --next-cyan: #0070f3;
+      --next-teal: #50e3c2;
+      --accent-purple: #7928ca;
+      --accent-pink: #ff0080;
+      --accent-amber: #f5a623;
+      --accent-emerald: #10b981;
+      --accent-rose: #ee0000;
+
+      --text-primary: #ededed;
+      --text-secondary: #888888;
+      --text-muted: #555555;
+
+      --font-heading: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.65;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--border-highlight); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--next-cyan); }
+
+    /* Top Navbar */
+    .top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 2rem;
+      gap: 1.5rem;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .vercel-triangle {
+      width: 22px;
+      height: 22px;
+      fill: var(--next-white);
+    }
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .tp-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: rgba(0, 112, 243, 0.15);
+      color: var(--next-cyan);
+      border: 1px solid rgba(0, 112, 243, 0.35);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.85rem;
+    }
+    .nav-link-btn {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.35rem 0.65rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s;
+    }
+    .nav-link-btn:hover {
+      color: var(--next-white);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-search {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+    }
+    .nav-search input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 0.45rem 1rem 0.45rem 2.25rem;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .nav-search input:focus {
+      border-color: var(--next-cyan);
+    }
+    .nav-search svg {
+      position: absolute;
+      left: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      color: var(--text-muted);
+    }
+
+    .btn-simulator-nav {
+      background: var(--next-white);
+      color: var(--bg-base);
+      border: none;
+      padding: 0.45rem 1.1rem;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s;
+    }
+    .btn-simulator-nav:hover {
+      background: #eaeaea;
+      transform: translateY(-1px);
+    }
+
+    /* Reading Progress Bar */
+    .reading-progress-track {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+      z-index: 999;
+    }
+    .reading-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--next-cyan), var(--next-teal), var(--accent-purple));
+      transition: width 0.1s linear;
+    }
+
+    /* App Container Layout */
+    .app-container {
+      display: flex;
+      max-width: 1680px;
+      margin: 0 auto;
+      min-height: calc(100vh - 56px);
+    }
+
+    /* Left Sidebar Navigation (TutorialsPoint style categorization) */
+    .app-sidebar {
+      width: 310px;
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.5rem 1rem;
+      position: sticky;
+      top: 59px;
+      height: calc(100vh - 59px);
+      overflow-y: auto;
+    }
+    .sidebar-category {
+      margin-bottom: 1.65rem;
+    }
+    .sidebar-category-title {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0 0.5rem;
+      margin-bottom: 0.45rem;
+    }
+    .sidebar-nav-list {
+      list-style: none;
+    }
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.75rem;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+    .sidebar-nav-link:hover {
+      background: var(--bg-card);
+      color: var(--next-white);
+    }
+    .sidebar-nav-link.active {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--next-white);
+      font-weight: 600;
+      border-left: 3px solid var(--next-cyan);
+    }
+
+    /* Main Content Area */
+    .app-main {
+      flex: 1;
+      padding: 2.5rem 3.5rem;
+      max-width: 1060px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: radial-gradient(circle at 10% 20%, rgba(0, 112, 243, 0.15) 0%, transparent 60%),
+                  radial-gradient(circle at 90% 80%, rgba(121, 40, 202, 0.15) 0%, transparent 60%),
+                  var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 3rem;
+      margin-bottom: 3.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-full);
+      color: var(--next-white);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #0070f3, #50e3c2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 780px;
+      line-height: 1.6;
+    }
+
+    /* Panel Boxes (TutorialsPoint Notes / Tips) */
+    .tp-panel {
+      padding: 1.1rem 1.35rem;
+      border-radius: var(--radius-sm);
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    .tp-note {
+      background: rgba(0, 112, 243, 0.08);
+      border-left: 4px solid var(--next-cyan);
+      color: #bfdbfe;
+    }
+    .tp-tip {
+      background: rgba(80, 227, 194, 0.08);
+      border-left: 4px solid var(--next-teal);
+      color: #99f6e4;
+    }
+    .tp-warning {
+      background: rgba(245, 166, 35, 0.08);
+      border-left: 4px solid var(--accent-amber);
+      color: #fde68a;
+    }
+
+    /* Module Sections */
+    .module-section {
+      margin-bottom: 4.5rem;
+      scroll-margin-top: 80px;
+    }
+    .module-header {
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.75rem;
+    }
+    .module-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--next-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .module-title {
+      font-family: var(--font-heading);
+      font-size: 1.95rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-top: 0.2rem;
+    }
+
+    /* Visual Diagrams */
+    .diagram-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      margin: 1.75rem 0;
+      text-align: center;
+    }
+    .diagram-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+    .diagram-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    .diagram-arrow {
+      color: var(--next-cyan);
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    /* Code Snippets */
+    .code-box {
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    pre.code-content {
+      padding: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #e5e5e5;
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+    .btn-copy {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .btn-copy:hover {
+      color: var(--next-white);
+      border-color: var(--next-white);
+    }
+
+    /* Tables */
+    .tp-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.875rem;
+    }
+    .tp-table th, .tp-table td {
+      border: 1px solid var(--border-subtle);
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    .tp-table th {
+      background: var(--bg-card);
+      color: var(--next-white);
+      font-weight: 700;
+    }
+    .tp-table tr:nth-child(even) { background: rgba(255, 255, 255, 0.015); }
+
+    /* INTERACTIVE SIMULATOR: App Router Tree Explorer */
+    .simulator-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-radius: var(--radius-lg);
+      margin: 2.25rem 0;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .simulator-header {
+      background: #161616;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .simulator-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--next-white);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .simulator-split {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 380px;
+    }
+    .simulator-tree-pane {
+      background: #0d0d0d;
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      min-width: 0;
+    }
+    .tree-folder {
+      color: var(--next-teal);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .tree-file {
+      display: block;
+      color: var(--text-secondary);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .tree-file:hover {
+      background: #1c1c1c;
+      color: var(--next-cyan);
+    }
+    .tree-file.active {
+      background: rgba(0, 112, 243, 0.15);
+      color: var(--next-cyan);
+      font-weight: 600;
+      border-left: 2px solid var(--next-cyan);
+    }
+    .simulator-output-pane {
+      background: #121212;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow-x: auto;
+    }
+    .mock-browser-bar {
+      background: #1f1f1f;
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .mock-rendered-view {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* INTERACTIVE ROUTE HANDLER TESTER */
+    .api-tester-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .api-endpoint-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .api-method-badge {
+      background: #0070f3;
+      color: white;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+    }
+    .api-url-input {
+      flex: 1;
+      background: #0a0a0a;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-sm);
+    }
+    .btn-send-request {
+      background: var(--next-teal);
+      color: #000;
+      border: none;
+      padding: 0.4rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.8rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    /* Exercises Card */
+    .exercise-box {
+      background: #0f131a;
+      border: 1px solid #223048;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .exercise-header {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--next-teal);
+      margin-bottom: 0.4rem;
+    }
+    .exercise-fill-code {
+      background: #06080d;
+      border: 1px solid var(--border-subtle);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      margin: 1rem 0;
+      line-height: 1.8;
+    }
+    .exercise-input {
+      background: #1a2233;
+      border: 1px solid #3b4d6e;
+      color: var(--next-cyan);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      outline: none;
+      width: 140px;
+    }
+    .btn-submit-ex {
+      background: var(--next-cyan);
+      color: white;
+      border: none;
+      padding: 0.45rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-submit-ex:hover {
+      background: #005bb5;
+    }
+    .btn-show-ans {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+      padding: 0.45rem 1rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-show-ans:hover {
+      border-color: var(--next-cyan);
+      color: var(--next-cyan);
+      background: rgba(0, 112, 243, 0.08);
+    }
+    .btn-chapter-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.15s;
+    }
+    .btn-chapter-nav:hover {
+      border-color: var(--next-cyan);
+      color: var(--next-cyan);
+    }
+
+    @media (max-width: 1024px) {
+      .app-sidebar { display: none; }
+      .app-main { padding: 1.5rem; }
+      .simulator-split { grid-template-columns: 1fr; }
+    }
+
+    /* Embedded Mode in Master Hub */
+    .is-embedded .global-nav-link,
+    .is-embedded .nav-brand {
+      display: none !important;
+    }
+    .is-embedded .top-navbar {
+      top: 0;
+      padding: 0.4rem 1.25rem;
+      background: rgba(15, 23, 42, 0.95);
+    }
+  </style>
+  <script>
+    if (window.self !== window.top) {
+      document.documentElement.classList.add('is-embedded');
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.add('is-embedded');
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="top-navbar">
+    <div class="nav-left">
+      <a href="#" class="nav-brand">
+        <svg class="vercel-triangle" viewBox="0 0 1155 1000">
+          <path d="m577.3 0 577.4 1000H0z"/>
+        </svg>
+        <span class="brand-title">Next.js Tutorial</span>
+        <span class="tp-badge">TutorialsPoint Inspired</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="../full_frontend_learn.html" target="_top" class="nav-link-btn global-nav-link" style="color: #0070f3;">🏠 Hub</a>
+        <a href="#sec-intro" class="nav-link-btn">Overview</a>
+        <a href="#sec-rendering" class="nav-link-btn">SSR & SSG</a>
+        <a href="#sec-app-router" class="nav-link-btn">App Router</a>
+        <a href="#sec-server-actions" class="nav-link-btn">Server Actions</a>
+        <a href="#sec-api-routes" class="nav-link-btn">Route Handlers</a>
+        <a href="../about_me.html" target="_top" class="nav-link-btn global-nav-link" style="color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4);">👤 About Me</a>
+      </div>
+    </div>
+
+    <div class="nav-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search Next.js tutorial (e.g. Server Components, ISR)..." oninput="handleSearch(this.value)">
+    </div>
+
+    <div>
+      <button class="btn-simulator-nav" onclick="document.getElementById('sec-tree-simulator').scrollIntoView({behavior:'smooth'})">
+        <span>⚡ App Router Simulator</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Reading Progress -->
+  <div class="reading-progress-track">
+    <div class="reading-progress-bar" id="readingProgressBar"></div>
+  </div>
+
+  <div class="app-container">
+
+    <!-- Left Categorized Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">Next.js Basics</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-intro" class="sidebar-nav-link active">Next.js Overview</a></li>
+          <li><a href="#sec-setup" class="sidebar-nav-link">Project Setup & CLI</a></li>
+          <li><a href="#sec-rendering" class="sidebar-nav-link">CSR vs SSR vs SSG vs ISR</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">App Router Architecture</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-app-router" class="sidebar-nav-link">App Router vs Pages Router</a></li>
+          <li><a href="#sec-server-vs-client" class="sidebar-nav-link">Server vs Client Components</a></li>
+          <li><a href="#sec-file-conventions" class="sidebar-nav-link">File Conventions (layout, page)</a></li>
+          <li><a href="#sec-tree-simulator" class="sidebar-nav-link">⚡ Visual Router Simulator</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">Routing & Navigation</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-dynamic-routing" class="sidebar-nav-link">Dynamic Routes [id]</a></li>
+          <li><a href="#sec-navigation" class="sidebar-nav-link">Linking & useRouter</a></li>
+          <li><a href="#sec-route-groups" class="sidebar-nav-link">Route Groups (auth)</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">Data Fetching & Backend</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-data-fetching" class="sidebar-nav-link">Server-Side Data Fetching</a></li>
+          <li><a href="#sec-server-actions" class="sidebar-nav-link">Server Actions ('use server')</a></li>
+          <li><a href="#sec-api-routes" class="sidebar-nav-link">Route Handlers (route.ts)</a></li>
+          <li><a href="#sec-middleware" class="sidebar-nav-link">Middleware & Auth</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">Practice & Resources</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-exercises" class="sidebar-nav-link">Test Yourself Exercises</a></li>
+          <li><a href="#sec-interview" class="sidebar-nav-link">Top 25 Interview Q&As</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+
+      <!-- Hero Header -->
+      <section class="hero-banner" id="sec-intro">
+        <div class="hero-badge">
+          <span>▲</span> The Full-Stack React Framework for the Web
+        </div>
+        <h1 class="hero-title">Master <span>Next.js App Router</span> the Simple Way</h1>
+        <p class="hero-subtitle">
+          Used by Netflix, Uber, TikTok, and GitHub. Next.js enables you to create full-stack Web applications by extending the latest React features, including Server Components, nested routing, and Server Actions.
+        </p>
+      </section>
+
+      <!-- ====================================================================
+           MODULE 01: OVERVIEW & THE 4 RENDERING PARADIGMS
+           ==================================================================== -->
+      <section class="module-section" id="sec-rendering">
+        <div class="module-header">
+          <span class="module-tag">Module 01</span>
+          <h2 class="module-title">The 4 Rendering Strategies (CSR, SSR, SSG, ISR)</h2>
+        </div>
+
+        <p>Understanding when and where your HTML is created is the foundation of Next.js:</p>
+
+        <table class="tp-table">
+          <thead>
+            <tr>
+              <th>Strategy</th>
+              <th>Full Name</th>
+              <th>When is HTML Created?</th>
+              <th>Best Used For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>CSR</strong></td>
+              <td>Client-Side Rendering</td>
+              <td>In user's browser via JavaScript</td>
+              <td>Private user profile, internal SaaS tools</td>
+            </tr>
+            <tr>
+              <td><strong>SSR</strong></td>
+              <td>Server-Side Rendering</td>
+              <td>On the server on <strong>every request</strong></td>
+              <td>Live stock quotes, dynamic order book</td>
+            </tr>
+            <tr>
+              <td><strong>SSG</strong></td>
+              <td>Static Site Generation</td>
+              <td>At <strong>build time</strong> (cached forever)</td>
+              <td>Blogs, documentation, marketing landing pages</td>
+            </tr>
+            <tr>
+              <td><strong>ISR</strong></td>
+              <td>Incremental Static Regeneration</td>
+              <td>Built static, revalidated in background every N seconds</td>
+              <td>E-commerce product lists, daily financial summaries</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tp-panel tp-tip">
+          <strong>💡 ISR in 1 Line of Code:</strong><br>
+          Just add <code>export const revalidate = 60;</code> to any page. Next.js will serve the static cache, and regenerate fresh data in the background every 60 seconds!
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           MODULE 02: SERVER COMPONENTS VS CLIENT COMPONENTS
+           ==================================================================== -->
+      <section class="module-section" id="sec-server-vs-client">
+        <div class="module-header">
+          <span class="module-tag">Module 02</span>
+          <h2 class="module-title">Server Components vs Client Components</h2>
+        </div>
+
+        <p>In the Next.js App Router, <strong>every component is a React Server Component (RSC) by default</strong>!</p>
+
+        <div class="diagram-container">
+          <h4 style="color: var(--next-cyan);">The Server Component Architecture</h4>
+          <div class="diagram-flow">
+            <div class="diagram-step" style="border-color: #0070f3;">
+              🖥️ Server Component (Default)<br>
+              <small style="color:var(--text-secondary)">Fetches DB & API securely (0 KB JS)</small>
+            </div>
+            <div class="diagram-arrow">➔ passes data down ➔</div>
+            <div class="diagram-step" style="border-color: #50e3c2;">
+              💻 Client Component ('use client')<br>
+              <small style="color:var(--text-secondary)">Handles button clicks & useState</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-box">
+          <div class="code-box-header"><span>app/stocks/page.tsx (Server Component)</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre class="code-content"><code>// This runs ON THE SERVER. No client JS is sent!
+import BuyButton from './BuyButton'; // Client component
+
+export default async function StocksPage() {
+  // Direct database query! No public API exposure!
+  const stocks = await db.query('SELECT * FROM watchlist');
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Live Stocks&lt;/h1&gt;
+      {stocks.map(s =&gt; (
+        &lt;div key={s.id}&gt;
+          &lt;span&gt;{s.symbol}: ₹{s.price}&lt;/span&gt;
+          &lt;BuyButton ticker={s.symbol} /&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+        </div>
+
+        <div class="code-box">
+          <div class="code-box-header"><span>app/stocks/BuyButton.tsx (Client Component)</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre class="code-content"><code>'use client'; // <-- Mandatory for useState or onClick!
+
+import { useState } from 'react';
+
+export default function BuyButton({ ticker }: { ticker: string }) {
+  const [bought, setBought] = useState(false);
+
+  return (
+    &lt;button onClick={() =&gt; setBought(true)}&gt;
+      {bought ? '✔ Order Placed' : `Buy ${ticker}`}
+    &lt;/button&gt;
+  );
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           INTERACTIVE APP ROUTER VISUAL SIMULATOR
+           ==================================================================== -->
+      <section class="module-section" id="sec-tree-simulator">
+        <div class="module-header">
+          <span class="module-tag">Interactive Tool</span>
+          <h2 class="module-title">⚡ App Router Visual Tree Simulator</h2>
+        </div>
+
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+          Click on any route or special file in the left tree. Watch how Next.js resolves URL paths, nests layouts, and renders the UI in real time!
+        </p>
+
+        <div class="simulator-card">
+          <div class="simulator-header">
+            <span class="simulator-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+              Next.js File-System Routing Simulator
+            </span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Click file to inspect composition</span>
+          </div>
+
+          <div class="simulator-split">
+            <div class="simulator-tree-pane">
+              <div class="tree-folder">📁 app/</div>
+              <a class="tree-file active" onclick="selectRoute('/', 'app/page.tsx', 'Home Page UI', 'Welcome to Algo Trading Desk', this)">📄 page.tsx (Home)</a>
+              <a class="tree-file" onclick="selectRoute('/', 'app/layout.tsx', 'Root Layout (Shared Navbar & Shell)', 'Navbar & Global Providers', this)">📄 layout.tsx (Root)</a>
+              
+              <div class="tree-folder" style="margin-top: 1rem;">📁 app/dashboard/</div>
+              <a class="tree-file" onclick="selectRoute('/dashboard', 'app/dashboard/page.tsx', 'Dashboard Overview', 'Portfolio Balance & Active Orders', this)">📄 page.tsx</a>
+              <a class="tree-file" onclick="selectRoute('/dashboard', 'app/dashboard/loading.tsx', 'Suspense Fallback', 'Skeleton Loader: Fetching live positions...', this)">📄 loading.tsx</a>
+              
+              <div class="tree-folder" style="margin-top: 1rem;">📁 app/stocks/[symbol]/</div>
+              <a class="tree-file" onclick="selectRoute('/stocks/RELIANCE', 'app/stocks/[symbol]/page.tsx', 'Dynamic Route Param', 'Ticker Details for RELIANCE (LTP: ₹2,950)', this)">📄 page.tsx ([symbol])</a>
+            </div>
+
+            <div class="simulator-output-pane">
+              <div class="mock-browser-bar">
+                <span>🌐 URL:</span>
+                <strong id="mock-url-display" style="color: var(--next-cyan);">http://localhost:3000/</strong>
+              </div>
+
+              <div class="mock-rendered-view">
+                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;" id="mock-file-label">app/page.tsx</span>
+                <h3 style="margin: 0.5rem 0; color: var(--next-white);" id="mock-title-display">Home Page UI</h3>
+                <p style="color: var(--text-secondary); max-width: 450px;" id="mock-desc-display">
+                  Welcome to Algo Trading Desk. This route was rendered via <code>app/page.tsx</code> inside <code>app/layout.tsx</code>.
+                </p>
+                <div style="margin-top: 1.25rem; display: flex; gap: 0.5rem;">
+                  <span style="background: rgba(0,112,243,0.15); color: #0070f3; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem;">Server Component</span>
+                  <span style="background: rgba(80,227,194,0.15); color: #50e3c2; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem;">Streaming Ready</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           MODULE 03: SERVER ACTIONS ('use server')
+           ==================================================================== -->
+      <section class="module-section" id="sec-server-actions">
+        <div class="module-header">
+          <span class="module-tag">Module 03</span>
+          <h2 class="module-title">Server Actions ('use server') — Zero-API Mutations</h2>
+        </div>
+
+        <p>
+          Server Actions allow client components and HTML forms to invoke server-side functions directly, without writing separate API controllers!
+        </p>
+
+        <div class="code-box">
+          <div class="code-box-header"><span>app/actions.ts (Server Action)</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre class="code-content"><code>'use server'; // <-- Declares all exports as Server Actions!
+
+import { revalidatePath } from 'next/cache';
+
+export async function placeOrder(formData: FormData) {
+  const symbol = formData.get('symbol');
+  const qty = Number(formData.get('qty'));
+
+  // Run backend database mutation
+  await db.orders.create({ symbol, qty });
+
+  // Instantly purge stale cache and refresh page UI!
+  revalidatePath('/dashboard');
+}</code></pre>
+        </div>
+
+        <div class="code-box">
+          <div class="code-box-header"><span>app/trade/page.tsx (Form with Action)</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre class="code-content"><code>import { placeOrder } from '../actions';
+
+export default function TradePage() {
+  return (
+    &lt;form action={placeOrder}&gt;
+      &lt;input name="symbol" defaultValue="INFY" /&gt;
+      &lt;input name="qty" type="number" defaultValue="50" /&gt;
+      &lt;button type="submit"&gt;Execute Order&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           MODULE 04: ROUTE HANDLERS (route.ts)
+           ==================================================================== -->
+      <section class="module-section" id="sec-api-routes">
+        <div class="module-header">
+          <span class="module-tag">Module 04</span>
+          <h2 class="module-title">Route Handlers (route.ts) — Building REST APIs</h2>
+        </div>
+
+        <p>
+          In the App Router, <code>route.ts</code> files replace the old <code>pages/api</code> system using standard Web <code>Request</code> and <code>Response</code> APIs.
+        </p>
+
+        <!-- Interactive API Tester -->
+        <div class="api-tester-card">
+          <h4 style="margin-bottom: 0.75rem; color: var(--next-teal);">🧪 Interactive Route Handler Tester:</h4>
+          <div class="api-endpoint-bar">
+            <span class="api-method-badge" id="apiMethod">GET</span>
+            <input type="text" class="api-url-input" id="apiUrlInput" value="/api/market/quote?symbol=RELIANCE" readonly>
+            <button class="btn-send-request" onclick="testMockRouteHandler()">Send Request</button>
+          </div>
+          <div style="background: #050505; border: 1px solid var(--border-subtle); padding: 1rem; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; color: #a3e635;" id="apiResponseBox">
+            // Click "Send Request" to simulate Next.js NextResponse.json()
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           PRACTICE EXERCISES (Test Yourself!)
+           ==================================================================== -->
+      <section class="module-section" id="sec-exercises">
+        <div class="module-header">
+          <span class="module-tag">Practice</span>
+          <h2 class="module-title">Test Yourself With Exercises</h2>
+        </div>
+
+        <!-- Exercise 1 -->
+        <div class="exercise-box">
+          <div class="exercise-header">📝 Exercise 1: App Router Directive</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">What directive must be added at the top of a file to make it a Client Component in the App Router?</p>
+          <div class="exercise-fill-code">
+            '<input type="text" id="ex1-ans" class="exercise-input" placeholder="directive" onkeydown="if(event.key===\'Enter\') checkNextEx(\'ex1-ans\', \'use client\', \'ex1-res\')">';<br>
+            import { useState } from 'react';
+          </div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+            <button class="btn-submit-ex" onclick="checkNextEx('ex1-ans', 'use client', 'ex1-res')">Submit Answer</button>
+            <button class="btn-show-ans" onclick="showNextAnswer('ex1-ans', 'use client', 'ex1-res')">Show Answer</button>
+          </div>
+          <div id="ex1-res" style="margin-top: 0.75rem; font-weight: 600; display: none;"></div>
+        </div>
+
+        <!-- Exercise 2 -->
+        <div class="exercise-box">
+          <div class="exercise-header">📝 Exercise 2: Server Action Directive</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">What directive is used to mark a function as a Server Action?</p>
+          <div class="exercise-fill-code">
+            export async function updateProfile() {<br>
+            &nbsp;&nbsp;'<input type="text" id="ex2-ans" class="exercise-input" placeholder="directive" onkeydown="if(event.key===\'Enter\') checkNextEx(\'ex2-ans\', \'use server\', \'ex2-res\')">';<br>
+            }
+          </div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+            <button class="btn-submit-ex" onclick="checkNextEx('ex2-ans', 'use server', 'ex2-res')">Submit Answer</button>
+            <button class="btn-show-ans" onclick="showNextAnswer('ex2-ans', 'use server', 'ex2-res')">Show Answer</button>
+          </div>
+          <div id="ex2-res" style="margin-top: 0.75rem; font-weight: 600; display: none;"></div>
+        </div>
+
+        <!-- Exercise 3 -->
+        <div class="exercise-box">
+          <div class="exercise-header">📝 Exercise 3: Dynamic Route Segment</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">What folder naming convention is used in the App Router to create a dynamic parameter named <code>ticker</code>?</p>
+          <div class="exercise-fill-code">
+            app/stocks/<input type="text" id="ex3-ans" class="exercise-input" placeholder="[param]" onkeydown="if(event.key===\'Enter\') checkNextEx(\'ex3-ans\', \'[ticker]\', \'ex3-res\')">/page.tsx
+          </div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+            <button class="btn-submit-ex" onclick="checkNextEx('ex3-ans', '[ticker]', 'ex3-res')">Submit Answer</button>
+            <button class="btn-show-ans" onclick="showNextAnswer('ex3-ans', '[ticker]', 'ex3-res')">Show Answer</button>
+          </div>
+          <div id="ex3-res" style="margin-top: 0.75rem; font-weight: 600; display: none;"></div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TOP INTERVIEW QUESTIONS
+           ==================================================================== -->
+      <section class="module-section" id="sec-interview">
+        <div class="module-header">
+          <span class="module-tag">Interview Prep</span>
+          <h2 class="module-title">Top Next.js Interview Questions & Answers</h2>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: 8px; margin-bottom: 1rem;">
+          <h4 style="color: var(--next-cyan);">Q1: What is the main difference between layout.tsx and template.tsx?</h4>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.35rem;">
+            <code>layout.tsx</code> preserves state across child route transitions and does not re-render. <code>template.tsx</code> creates a fresh instance and re-mounts on every route change, resetting component state and re-syncing effects.
+          </p>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: 8px; margin-bottom: 1rem;">
+          <h4 style="color: var(--next-cyan);">Q2: Why does Next.js 14 use Server Components by default?</h4>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.35rem;">
+            Zero bundle size impact! Server components do not send their JavaScript code or heavy libraries (like Markdown parsers or DB drivers) to the client browser, resulting in blazing fast First Contentful Paint (FCP).
+          </p>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: 8px; margin-bottom: 1rem;">
+          <h4 style="color: var(--next-cyan);">Q3: What does 'use server' at the top of a file mean?</h4>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.35rem;">
+            It marks all exported async functions in that file as <strong>Server Actions</strong>, allowing client components or HTML forms to execute them seamlessly via POST requests with automatic CSRF protection.
+          </p>
+        </div>
+      </section>
+
+      <!-- Chapter Navigation Row -->
+      <div class="chapter-nav-row" style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+        <a href="#sec-intro" class="btn-chapter-nav">❮ Intro & Architecture</a>
+        <a href="#sec-exercises" class="btn-chapter-nav">Exercises & Quizzes ❯</a>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Client JavaScript Logic -->
+  <script>
+    // Reading Progress Indicator
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('readingProgressBar').style.width = scrolled + '%';
+    });
+
+    // Copy Code Utility with Fallback
+    function copyCode(btn) {
+      try {
+        const code = btn.parentElement.nextElementSibling.innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(() => {
+            showCopySuccess(btn);
+          }).catch(() => fallbackCopy(code, btn));
+        } else {
+          fallbackCopy(code, btn);
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function fallbackCopy(text, btn) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showCopySuccess(btn);
+    }
+
+    function showCopySuccess(btn) {
+      const orig = btn.innerText;
+      btn.innerText = 'Copied!';
+      btn.style.color = '#50e3c2';
+      setTimeout(() => {
+        btn.innerText = orig;
+        btn.style.color = '';
+      }, 1500);
+    }
+
+    // App Router Tree Simulator Logic
+    function selectRoute(url, file, title, desc, element) {
+      document.querySelectorAll('.tree-file').forEach(f => f.classList.remove('active'));
+      element.classList.add('active');
+
+      document.getElementById('mock-url-display').innerText = 'http://localhost:3000' + url;
+      document.getElementById('mock-file-label').innerText = file;
+      document.getElementById('mock-title-display').innerText = title;
+      document.getElementById('mock-desc-display').innerText = desc;
+    }
+
+    // Interactive API Tester Mock
+    function testMockRouteHandler() {
+      const box = document.getElementById('apiResponseBox');
+      box.innerHTML = `<span style="color: #0070f3;">⏳ Invoking Next.js Route Handler at GET /api/market/quote...</span>`;
+      setTimeout(() => {
+        const mockJson = {
+          status: 200,
+          timestamp: new Date().toISOString(),
+          data: {
+            symbol: "RELIANCE",
+            ltp: 2954.20,
+            change: "+1.45%",
+            exchange: "NSE",
+            handler: "app/api/market/quote/route.ts"
+          }
+        };
+        box.innerHTML = `<pre style="margin:0; color:#50e3c2;">HTTP 200 OK (NextResponse.json)\n` + JSON.stringify(mockJson, null, 2) + `</pre>`;
+      }, 350);
+    }
+
+    // Exercise Checker (Robust & Lenient)
+    function cleanAnswer(str) {
+      if (!str) return '';
+      return str.toString().trim().toLowerCase()
+        .replace(/^['"`\s]+/, '')
+        .replace(/['"`\s;()]+$/, '')
+        .trim();
+    }
+
+    function checkNextEx(inputId, correctAns, resultId) {
+      const rawVal = document.getElementById(inputId).value;
+      const val = cleanAnswer(rawVal);
+      const target = cleanAnswer(correctAns);
+      const res = document.getElementById(resultId);
+      res.style.display = 'block';
+
+      if (val && (val === target || val === target.replace(/\s+/g, ''))) {
+        res.style.color = '#50e3c2';
+        res.innerHTML = '✔ Correct! Great job.';
+      } else {
+        res.style.color = '#ee0000';
+        res.innerHTML = '✖ Incorrect. Expected: <code>' + correctAns + '</code> (or click "Show Answer")';
+      }
+    }
+
+    function showNextAnswer(inputId, correctAns, resultId) {
+      const input = document.getElementById(inputId);
+      input.value = correctAns;
+      const res = document.getElementById(resultId);
+      res.style.display = 'block';
+      res.style.color = '#50e3c2';
+      res.innerHTML = '✔ Answer filled: <code>' + correctAns + '</code>';
+    }
+
+    // Search Filter
+    function handleSearch(term) {
+      const sections = document.querySelectorAll('.module-section');
+      const lower = term.toLowerCase().trim();
+      sections.forEach(sec => {
+        if (!lower || sec.innerText.toLowerCase().includes(lower)) {
+          sec.style.display = 'block';
+        } else {
+          sec.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

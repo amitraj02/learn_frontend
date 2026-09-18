@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Tutorial — Learn React JS Step by Step (Beginners to Pro)</title>
+  <meta name="description" content="The most reliable, step-by-step React tutorial for beginners and freshers. Built with W3Schools-inspired clarity, interactive 'Try it Yourself' live editors, ES6 refresher, hooks deep dive, exercises, and quizzes.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- React 18 & Babel for In-Browser Interactive Execution -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --bg-base: #0a0e17;
+      --bg-surface: #101726;
+      --bg-card: #172033;
+      --bg-card-hover: #1e2b45;
+      --bg-code: #0b1120;
+      --border-subtle: #202d44;
+      --border-highlight: #33486c;
+
+      --react-blue: #00d8ff;
+      --w3-green: #04aa6d;
+      --w3-green-hover: #059862;
+      --accent-indigo: #6366f1;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+
+      --font-heading: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.65;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--border-highlight); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--react-blue); }
+
+    /* Top Navigation */
+    .top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(10, 14, 23, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 1.75rem;
+      gap: 1rem;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .react-atom-icon {
+      width: 32px;
+      height: 32px;
+      animation: spin 18s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--react-blue), #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .w3-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: rgba(4, 170, 109, 0.15);
+      color: #10b981;
+      border: 1px solid rgba(4, 170, 109, 0.35);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.75rem;
+      margin-left: 1rem;
+    }
+    .nav-link-btn {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s;
+    }
+    .nav-link-btn:hover {
+      color: var(--react-blue);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-search {
+      flex: 1;
+      max-width: 380px;
+      position: relative;
+    }
+    .nav-search input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 0.45rem 1rem 0.45rem 2.2rem;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .nav-search input:focus {
+      border-color: var(--react-blue);
+    }
+    .nav-search svg {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      color: var(--text-muted);
+    }
+
+    .btn-w3-try {
+      background: var(--w3-green);
+      color: white;
+      border: none;
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.15s;
+    }
+    .btn-w3-try:hover {
+      background: var(--w3-green-hover);
+    }
+
+    /* Reading Progress Bar */
+    .reading-progress-track {
+      position: fixed;
+      top: 53px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+      z-index: 999;
+    }
+    .reading-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--w3-green), var(--react-blue), var(--accent-indigo));
+      transition: width 0.1s linear;
+    }
+
+    /* App Container Layout */
+    .app-container {
+      display: flex;
+      max-width: 1680px;
+      margin: 0 auto;
+      min-height: calc(100vh - 53px);
+    }
+
+    /* Left Sidebar Navigation (W3Schools Categorized Format) */
+    .app-sidebar {
+      width: 300px;
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.25rem 0.85rem;
+      position: sticky;
+      top: 56px;
+      height: calc(100vh - 56px);
+      overflow-y: auto;
+    }
+    .sidebar-category {
+      margin-bottom: 1.5rem;
+    }
+    .sidebar-category-title {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+    .sidebar-nav-list {
+      list-style: none;
+    }
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0.65rem;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+    .sidebar-nav-link:hover {
+      background: var(--bg-card);
+      color: var(--react-blue);
+    }
+    .sidebar-nav-link.active {
+      background: rgba(0, 216, 255, 0.1);
+      color: var(--react-blue);
+      font-weight: 600;
+      border-left: 3px solid var(--react-blue);
+    }
+
+    /* Main Content Area */
+    .app-main {
+      flex: 1;
+      padding: 2rem 3rem;
+      max-width: 1040px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    /* Chapter Header Banner */
+    .chapter-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .chapter-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(0, 216, 255, 0.12);
+      color: var(--react-blue);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+    }
+    .chapter-title {
+      font-family: var(--font-heading);
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+    .chapter-intro {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Pedagogical W3Schools 'Note' & 'Tip' Boxes */
+    .w3-panel {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      margin: 1.25rem 0;
+      font-size: 0.9rem;
+    }
+    .w3-note {
+      background: rgba(0, 216, 255, 0.08);
+      border-left: 4px solid var(--react-blue);
+      color: #bae6fd;
+    }
+    .w3-tip {
+      background: rgba(4, 170, 109, 0.08);
+      border-left: 4px solid var(--w3-green);
+      color: #a7f3d0;
+    }
+    .w3-warning {
+      background: rgba(244, 63, 94, 0.08);
+      border-left: 4px solid var(--accent-rose);
+      color: #fecdd3;
+    }
+
+    /* W3Schools Signature "Try it Yourself" Live Card */
+    .tryit-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-radius: var(--radius-md);
+      margin: 1.5rem 0 2rem 0;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+    .tryit-header {
+      background: #111a2d;
+      padding: 0.65rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .tryit-title {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .tryit-split {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      min-height: 240px;
+    }
+    .tryit-editor-pane {
+      background: #080d16;
+      border-right: 1px solid var(--border-subtle);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .tryit-editor-pane textarea {
+      flex: 1;
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #7dd3fc;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.55;
+      resize: none;
+      outline: none;
+    }
+    .tryit-preview-pane {
+      background: #0f172a;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow-y: auto;
+      overflow-x: auto;
+      min-width: 0;
+    }
+    .tryit-footer {
+      background: #0d1422;
+      border-top: 1px solid var(--border-subtle);
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-run-tryit {
+      background: var(--w3-green);
+      color: white;
+      border: none;
+      padding: 0.4rem 1.1rem;
+      font-weight: 700;
+      font-size: 0.8rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.15s;
+    }
+    .btn-run-tryit:hover {
+      background: var(--w3-green-hover);
+    }
+
+    /* Content Modules & Structure */
+    .module-block {
+      margin-bottom: 4rem;
+      scroll-margin-top: 75px;
+    }
+    .module-heading {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border-subtle);
+      padding-bottom: 0.5rem;
+    }
+    .module-subheading {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.5rem 0;
+      color: var(--react-blue);
+    }
+
+    /* Code Snippet Box */
+    .code-box {
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.4rem 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    pre.code-text {
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.55;
+    }
+    .btn-copy-code {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .btn-copy-code:hover {
+      color: var(--react-blue);
+      border-color: var(--react-blue);
+    }
+
+    /* Tables */
+    .w3-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.875rem;
+    }
+    .w3-table th, .w3-table td {
+      border: 1px solid var(--border-subtle);
+      padding: 0.65rem 0.9rem;
+      text-align: left;
+    }
+    .w3-table th {
+      background: var(--bg-card);
+      color: var(--react-blue);
+      font-weight: 700;
+    }
+    .w3-table tr:nth-child(even) { background: rgba(255, 255, 255, 0.015); }
+
+    /* Interactive Exercise Challenge (W3Schools Test Yourself Style) */
+    .exercise-card {
+      background: #111a2e;
+      border: 1px solid #233555;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+    .exercise-header {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--w3-green);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .exercise-task {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+    .exercise-code-fill {
+      background: #080d18;
+      border: 1px solid var(--border-subtle);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      line-height: 2;
+    }
+    .exercise-input {
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      outline: none;
+      width: 130px;
+    }
+    .exercise-input:focus {
+      border-color: var(--w3-green);
+    }
+    .btn-submit-exercise {
+      background: var(--w3-green);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-submit-exercise:hover {
+      background: var(--w3-green-hover);
+    }
+    .btn-show-exercise {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-show-exercise:hover {
+      border-color: var(--w3-green);
+      color: var(--w3-green);
+      background: rgba(4, 170, 109, 0.08);
+    }
+    .btn-reset-tryit {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-reset-tryit:hover {
+      color: var(--text-primary);
+      border-color: var(--border-highlight);
+      background: var(--bg-surface);
+    }
+    .btn-clear-tryit {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-clear-tryit:hover {
+      color: var(--accent-rose);
+      border-color: rgba(244, 63, 94, 0.4);
+    }
+    .exercise-result {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* Chapter Next/Previous Navigation */
+    .chapter-nav-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .btn-chapter-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.15s;
+    }
+    .btn-chapter-nav:hover {
+      border-color: var(--react-blue);
+      color: var(--react-blue);
+      background: var(--bg-surface);
+    }
+
+    @media (max-width: 1024px) {
+      .app-sidebar { display: none; }
+      .app-main { padding: 1.5rem; }
+      .tryit-split { grid-template-columns: 1fr; }
+    }
+
+    /* Embedded Mode in Master Hub */
+    .is-embedded .global-nav-link,
+    .is-embedded .nav-brand {
+      display: none !important;
+    }
+    .is-embedded .top-navbar {
+      top: 0;
+      padding: 0.4rem 1.25rem;
+      background: rgba(15, 23, 42, 0.95);
+    }
+  </style>
+  <script>
+    if (window.self !== window.top) {
+      document.documentElement.classList.add('is-embedded');
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.add('is-embedded');
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="top-navbar">
+    <div class="nav-left">
+      <a href="#" class="nav-brand">
+        <svg class="react-atom-icon" viewBox="-11.5 -10.23174 23 20.46348">
+          <circle cx="0" cy="0" r="2.05" fill="#00d8ff"/>
+          <g stroke="#00d8ff" stroke-width="1" fill="none">
+            <ellipse rx="11" ry="4.2"/>
+            <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
+            <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
+          </g>
+        </svg>
+        <span class="brand-title">React Tutorial</span>
+        <span class="w3-badge">W3Schools Inspired</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="../full_frontend_learn.html" target="_top" class="nav-link-btn global-nav-link" style="color: #38bdf8;">🏠 Hub</a>
+        <a href="#ch-intro" class="nav-link-btn">Tutorial</a>
+        <a href="#ch-es6" class="nav-link-btn">ES6</a>
+        <a href="#ch-hooks" class="nav-link-btn">Hooks</a>
+        <a href="#ch-exercises" class="nav-link-btn">Exercises</a>
+        <a href="#sec-live-sandbox" class="nav-link-btn">Sandbox</a>
+        <a href="../about_me.html" target="_top" class="nav-link-btn global-nav-link" style="color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4);">👤 About Me</a>
+      </div>
+    </div>
+
+    <div class="nav-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search React tutorial..." oninput="handleSearch(this.value)">
+    </div>
+
+    <div>
+      <button class="btn-w3-try" onclick="document.getElementById('sec-live-sandbox').scrollIntoView({behavior:'smooth'})">
+        <span>⚡ Try React Live</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Progress Bar -->
+  <div class="reading-progress-track">
+    <div class="reading-progress-bar" id="readingProgressBar"></div>
+  </div>
+
+  <div class="app-container">
+
+    <!-- Left Categorized Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">React Tutorial</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#ch-intro" class="sidebar-nav-link active">React HOME</a></li>
+          <li><a href="#ch-intro" class="sidebar-nav-link">React Intro</a></li>
+          <li><a href="#ch-es6" class="sidebar-nav-link">React ES6 Pre-requisites</a></li>
+          <li><a href="#ch-render" class="sidebar-nav-link">React Render HTML</a></li>
+          <li><a href="#ch-jsx" class="sidebar-nav-link">React JSX</a></li>
+          <li><a href="#ch-components" class="sidebar-nav-link">React Components</a></li>
+          <li><a href="#ch-props" class="sidebar-nav-link">React Props</a></li>
+          <li><a href="#ch-events" class="sidebar-nav-link">React Events</a></li>
+          <li><a href="#ch-conditionals" class="sidebar-nav-link">React Conditionals</a></li>
+          <li><a href="#ch-lists" class="sidebar-nav-link">React Lists & Keys</a></li>
+          <li><a href="#ch-forms" class="sidebar-nav-link">React Forms</a></li>
+          <li><a href="#ch-router" class="sidebar-nav-link">React Router</a></li>
+          <li><a href="#ch-memo" class="sidebar-nav-link">React Memo</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">React Hooks</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#ch-hooks" class="sidebar-nav-link">What is a Hook?</a></li>
+          <li><a href="#ch-usestate" class="sidebar-nav-link">useState</a></li>
+          <li><a href="#ch-useeffect" class="sidebar-nav-link">useEffect</a></li>
+          <li><a href="#ch-usecontext" class="sidebar-nav-link">useContext</a></li>
+          <li><a href="#ch-useref" class="sidebar-nav-link">useRef</a></li>
+          <li><a href="#ch-usereducer" class="sidebar-nav-link">useReducer</a></li>
+          <li><a href="#ch-usecallback" class="sidebar-nav-link">useCallback</a></li>
+          <li><a href="#ch-usememo" class="sidebar-nav-link">useMemo</a></li>
+          <li><a href="#ch-custom-hooks" class="sidebar-nav-link">Custom Hooks</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">Practice & Exercises</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#ch-exercises" class="sidebar-nav-link">React Exercises (Quizzes)</a></li>
+          <li><a href="#sec-live-sandbox" class="sidebar-nav-link">Live Code Sandbox</a></li>
+          <li><a href="#ch-interview" class="sidebar-nav-link">Interview Q&As</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-main">
+
+      <!-- Header Banner -->
+      <section class="chapter-header" id="ch-intro">
+        <span class="chapter-badge">Beginner's Step-by-Step Guide</span>
+        <h1 class="chapter-title">React Tutorial</h1>
+        <p class="chapter-intro">
+          React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.
+        </p>
+
+        <div class="w3-panel w3-tip" style="margin-top: 1.25rem;">
+          <strong>🎯 Our Goal:</strong> Make React simple, reliable, and fun to learn for freshers with easy syntax and live <em>"Try it Yourself"</em> interactive code!
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           CHAPTER: ES6 REFRESHER (W3Schools Special)
+           ==================================================================== -->
+      <section class="module-block" id="ch-es6">
+        <h2 class="module-heading">React ES6 Pre-requisites</h2>
+        <p>Before learning React, you only need to know a few modern ES6 JavaScript concepts:</p>
+
+        <h3 class="module-subheading">1. Arrow Functions</h3>
+        <p>Arrow functions allow us to write shorter function syntax:</p>
+        <div class="code-box">
+          <div class="code-box-header"><span>JavaScript ES6</span><button class="btn-copy-code" onclick="copyCode(this)">Copy</button></div>
+          <pre class="code-text"><code>// Before ES6:
+var hello = function() {
+  return "Hello World!";
+}
+
+// With ES6 Arrow Function:
+const hello = () => "Hello World!";</code></pre>
+        </div>
+
+        <h3 class="module-subheading">2. Destructuring (Super Important in React!)</h3>
+        <p>Destructuring allows you to easily extract values from arrays or objects into distinct variables:</p>
+        <div class="code-box">
+          <div class="code-box-header"><span>Destructuring Objects & Arrays</span><button class="btn-copy-code" onclick="copyCode(this)">Copy</button></div>
+          <pre class="code-text"><code>const stock = { symbol: "RELIANCE", price: 2950, exchange: "NSE" };
+
+// Instead of stock.symbol, stock.price:
+const { symbol, price } = stock;
+
+// Array destructuring (This is how useState works!):
+const fruits = ["Apple", "Banana"];
+const [first, second] = fruits;</code></pre>
+        </div>
+
+        <h3 class="module-subheading">3. Spread Operator <code>...</code></h3>
+        <p>The spread operator allows us to quickly copy all or part of an existing array or object into another array or object:</p>
+        <div class="code-box">
+          <div class="code-box-header"><span>Spread Operator</span><button class="btn-copy-code" onclick="copyCode(this)">Copy</button></div>
+          <pre class="code-text"><code>const numbersOne = [1, 2, 3];
+const numbersTwo = [4, 5, 6];
+const combined = [...numbersOne, ...numbersTwo]; // [1, 2, 3, 4, 5, 6]</code></pre>
+        </div>
+
+        <!-- TRY IT YOURSELF: ES6 -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: ES6 in React</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Editable React Component</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-es6-code" spellcheck="false">function StockProfile() {
+  // Destructuring an object
+  const instrument = { name: "Infosys", ticker: "INFY", price: 1620 };
+  const { name, ticker, price } = instrument;
+
+  // Arrow function calculation
+  const getTax = p => (p * 0.18).toFixed(2);
+
+  return (
+    <div style={{color: '#f8fafc', fontFamily: 'sans-serif'}}>
+      <h3>{name} ({ticker})</h3>
+      <p>Base Price: ₹{price}</p>
+      <p>GST (18%): ₹{getTax(price)}</p>
+    </div>
+  );
+}
+
+return <StockProfile />;
+</textarea>
+            </div>
+            <div class="tryit-preview-pane" id="tryit-es6-preview"></div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn-reset-tryit" onclick="resetReactTryIt('tryit-es6-code', 'tryit-es6-preview')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearReactTryIt('tryit-es6-preview')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runTryIt('tryit-es6-code', 'tryit-es6-preview')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           CHAPTER: RENDER HTML & ROOT
+           ==================================================================== -->
+      <section class="module-block" id="ch-render">
+        <h2 class="module-heading">React Render HTML</h2>
+        <p>
+          React renders HTML to the web page by using a function called <code>createRoot()</code> and its method <code>render()</code>.
+        </p>
+
+        <div class="code-box">
+          <div class="code-box-header"><span>index.js (React 18 Standard)</span><button class="btn-copy-code" onclick="copyCode(this)">Copy</button></div>
+          <pre class="code-text"><code>import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(&lt;h1&gt;Hello React 18!&lt;/h1&gt;);</code></pre>
+        </div>
+
+        <div class="w3-panel w3-note">
+          <strong>Note:</strong> In React 18, <code>ReactDOM.render</code> was replaced by <code>ReactDOM.createRoot</code> to enable concurrent rendering features!
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           CHAPTER: REACT JSX
+           ==================================================================== -->
+      <section class="module-block" id="ch-jsx">
+        <h2 class="module-heading">React JSX</h2>
+        <p>
+          JSX stands for JavaScript XML. JSX allows us to write HTML in React. JSX makes it easier to write and add HTML in React.
+        </p>
+
+        <h3 class="module-subheading">Expressions in JSX</h3>
+        <p>With JSX you can write expressions inside curly braces <code>{ }</code>. The expression can be a React variable, or property, or any valid JavaScript expression.</p>
+
+        <!-- TRY IT YOURSELF: JSX -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: JSX Expressions</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">JSX live evaluation</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-jsx-code" spellcheck="false">function MyJSXDemo() {
+  const stockName = "Tata Consultancy Services";
+  const shares = 10;
+  const price = 4120;
+
+  return (
+    <div style={{color: '#f8fafc', padding: '10px'}}>
+      <h2>Company: {stockName}</h2>
+      <p>5 + 5 = {5 + 5}</p>
+      <p>Order Value: ₹{(shares * price).toLocaleString()}</p>
+      <p>Status: {price > 4000 ? "⭐ Premium Stock" : "Standard"}</p>
+    </div>
+  );
+}
+
+return <MyJSXDemo />;
+</textarea>
+            </div>
+            <div class="tryit-preview-pane" id="tryit-jsx-preview"></div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn-reset-tryit" onclick="resetReactTryIt('tryit-jsx-code', 'tryit-jsx-preview')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearReactTryIt('tryit-jsx-preview')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runTryIt('tryit-jsx-code', 'tryit-jsx-preview')">▶ Run Code</button>
+          </div>
+        </div>
+
+        <div class="w3-panel w3-warning">
+          <strong>Important JSX Rules:</strong>
+          <ul style="margin-left: 1.25rem; margin-top: 0.4rem;">
+            <li>Elements must be closed (e.g. <code>&lt;img /&gt;</code>, <code>&lt;br /&gt;</code>).</li>
+            <li>Use <code>className</code> instead of <code>class</code>.</li>
+            <li>Always return one top-level element (or use Fragment <code>&lt;&gt; ... &lt;/&gt;</code>).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           CHAPTER: COMPONENTS & PROPS
+           ==================================================================== -->
+      <section class="module-block" id="ch-components">
+        <h2 class="module-heading">React Components & Props</h2>
+        <p>
+          Components are like functions that return HTML elements. Components are independent and reusable bits of code.
+        </p>
+
+        <h3 class="module-subheading" id="ch-props">React Props (Passing Data)</h3>
+        <p>React Props are like function arguments in JavaScript and attributes in HTML.</p>
+
+        <!-- TRY IT YOURSELF: PROPS -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: Components & Props</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Reusable Card Component</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-props-code" spellcheck="false">// Child Component receiving props
+function StockCard(props) {
+  return (
+    <div style={{
+      background: '#1e293b', 
+      border: '1px solid #334155', 
+      borderRadius: '8px', 
+      padding: '10px 15px', 
+      margin: '6px 0',
+      color: '#fff'
+    }}>
+      <strong>{props.symbol}</strong> — ₹{props.price}
+    </div>
+  );
+}
+
+// Parent Component
+function MarketWatch() {
+  return (
+    <div style={{width: '100%'}}>
+      <h3 style={{color: '#00d8ff', marginBottom: '8px'}}>Market Watch</h3>
+      <StockCard symbol="RELIANCE" price="2,950" />
+      <StockCard symbol="INFY" price="1,620" />
+      <StockCard symbol="TCS" price="4,120" />
+    </div>
+  );
+}
+
+return <MarketWatch />;
+</textarea>
+            </div>
+            <div class="tryit-preview-pane" id="tryit-props-preview"></div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn-reset-tryit" onclick="resetReactTryIt('tryit-props-code', 'tryit-props-preview')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearReactTryIt('tryit-props-preview')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runTryIt('tryit-props-code', 'tryit-props-preview')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           CHAPTER: EVENTS & STATE (USESTATE)
+           ==================================================================== -->
+      <section class="module-block" id="ch-usestate">
+        <h2 class="module-heading">React State & useState Hook</h2>
+        <p>
+          The React <code>useState</code> Hook allows us to track state in a function component. State generally refers to data or properties that need to be tracking in an application.
+        </p>
+
+        <!-- TRY IT YOURSELF: USESTATE -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: useState & Events</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Counter & Color Switcher</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-state-code" spellcheck="false">function TradingOrder() {
+  const [qty, setQty] = React.useState(10);
+  const [action, setAction] = React.useState("BUY");
+
+  return (
+    <div style={{textAlign: 'center', color: '#fff'}}>
+      <h3>Side: <span style={{color: action === 'BUY' ? '#10b981' : '#f43f5e'}}>{action}</span></h3>
+      <p style={{fontSize: '1.8rem', fontWeight: 'bold', margin: '10px 0'}}>{qty} Shares</p>
+      
+      <div style={{display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '10px'}}>
+        <button onClick={() => setQty(q => Math.max(1, q - 5))} style={{padding: '5px 12px', background: '#334155', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer'}}>−5</button>
+        <button onClick={() => setQty(q => q + 5)} style={{padding: '5px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer'}}>+5</button>
+      </div>
+
+      <button 
+        onClick={() => setAction(a => a === 'BUY' ? 'SELL' : 'BUY')}
+        style={{padding: '6px 14px', background: '#475569', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+      >
+        Toggle BUY / SELL
+      </button>
+    </div>
+  );
+}
+
+return <TradingOrder />;
+</textarea>
+            </div>
+            <div class="tryit-preview-pane" id="tryit-state-preview"></div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn-reset-tryit" onclick="resetReactTryIt('tryit-state-code', 'tryit-state-preview')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearReactTryIt('tryit-state-preview')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runTryIt('tryit-state-code', 'tryit-state-preview')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           CHAPTER: LISTS & KEYS
+           ==================================================================== -->
+      <section class="module-block" id="ch-lists">
+        <h2 class="module-heading">React Lists & The `key` Prop</h2>
+        <p>
+          In React, you will render lists with some type of loop. The JavaScript <code>map()</code> array method is generally the preferred method.
+        </p>
+
+        <div class="w3-panel w3-tip">
+          <strong>Keys:</strong> Keys allow React to keep track of elements. This helps React know which items have been changed, updated, or deleted!
+        </div>
+
+        <!-- TRY IT YOURSELF: LISTS -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: Dynamic List with Keys</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Array .map() demonstration</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-list-code" spellcheck="false">function Watchlist() {
+  const stocks = [
+    { id: 1, name: "Reliance", ltp: 2950 },
+    { id: 2, name: "TCS", ltp: 4120 },
+    { id: 3, name: "HDFC Bank", ltp: 1440 }
+  ];
+
+  return (
+    <div style={{color: '#fff', width: '100%'}}>
+      <h3 style={{color: '#00d8ff'}}>My Portfolio Stocks:</h3>
+      <ul style={{listStyle: 'none', padding: 0}}>
+        {stocks.map(item => (
+          <li key={item.id} style={{background: '#1e293b', margin: '6px 0', padding: '8px 12px', borderRadius: '6px'}}>
+            {item.name} — <strong style={{color: '#10b981'}}>₹{item.ltp}</strong>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+return <Watchlist />;
+</textarea>
+            </div>
+            <div class="tryit-preview-pane" id="tryit-list-preview"></div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn-reset-tryit" onclick="resetReactTryIt('tryit-list-code', 'tryit-list-preview')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearReactTryIt('tryit-list-preview')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runTryIt('tryit-list-code', 'tryit-list-preview')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           CHAPTER: FORMS & CONTROLLED INPUTS
+           ==================================================================== -->
+      <section class="module-block" id="ch-forms">
+        <h2 class="module-heading">React Forms (Controlled Components)</h2>
+        <p>
+          In HTML, form elements usually maintain their own state. In React, mutable state is kept in the state property of components, and only updated with <code>useState</code>.
+        </p>
+
+        <!-- TRY IT YOURSELF: FORMS -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: Controlled Input Form</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Live state mirror</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-form-code" spellcheck="false">function ScripSearchForm() {
+  const [ticker, setTicker] = React.useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    alert("Searching scrip: " + ticker);
+  }
+
+  return (
+    <form onSubmit={handleSubmit} style={{color: '#fff', textAlign: 'center'}}>
+      <h3>Scrip Finder</h3>
+      <input 
+        type="text" 
+        value={ticker}
+        onChange={e => setTicker(e.target.value.toUpperCase())}
+        placeholder="Enter Ticker (e.g. INFY)"
+        style={{padding: '8px', borderRadius: '4px', border: '1px solid #475569', background: '#1e293b', color: '#fff', marginBottom: '8px'}}
+      />
+      <br/>
+      <button type="submit" style={{padding: '6px 14px', background: '#04aa6d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer'}}>Search</button>
+      <p style={{marginTop: '10px', fontSize: '0.85rem', color: '#94a3b8'}}>Live Input: <strong>{ticker || '(none)'}</strong></p>
+    </form>
+  );
+}
+
+return <ScripSearchForm />;
+</textarea>
+            </div>
+            <div class="tryit-preview-pane" id="tryit-form-preview"></div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn-reset-tryit" onclick="resetReactTryIt('tryit-form-code', 'tryit-form-preview')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearReactTryIt('tryit-form-preview')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runTryIt('tryit-form-code', 'tryit-form-preview')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           CHAPTER: USEEFFECT (HOOKS DEEP DIVE)
+           ==================================================================== -->
+      <section class="module-block" id="ch-useeffect">
+        <h2 class="module-heading">React useEffect Hook</h2>
+        <p>
+          The <code>useEffect</code> Hook allows you to perform side effects in your components. Some examples of side effects are: fetching data, directly updating the DOM, and timers.
+        </p>
+
+        <!-- TRY IT YOURSELF: USEEFFECT -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: useEffect Timer & Cleanup</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Live running timer</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-effect-code" spellcheck="false">function LiveMarketTimer() {
+  const [seconds, setSeconds] = React.useState(0);
+
+  React.useEffect(() => {
+    // Timer interval side-effect
+    const timer = setInterval(() => {
+      setSeconds(prev => prev + 1);
+    }, 1000);
+
+    // Clean-up function to prevent memory leaks!
+    return () => clearInterval(timer);
+  }, []); // Empty array [] = runs once on mount!
+
+  return (
+    <div style={{color: '#fff', textAlign: 'center'}}>
+      <h3 style={{color: '#00d8ff'}}>Market Feed Session</h3>
+      <p style={{fontSize: '2.2rem', fontWeight: 'bold', margin: '8px 0'}}>{seconds}s</p>
+      <small style={{color: '#94a3b8'}}>Active WebSocket Heartbeat</small>
+    </div>
+  );
+}
+
+return <LiveMarketTimer />;
+</textarea>
+            </div>
+            <div class="tryit-preview-pane" id="tryit-effect-preview"></div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn-reset-tryit" onclick="resetReactTryIt('tryit-effect-code', 'tryit-effect-preview')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearReactTryIt('tryit-effect-preview')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runTryIt('tryit-effect-code', 'tryit-effect-preview')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           CHAPTER: TEST YOURSELF WITH EXERCISES (W3Schools Style)
+           ==================================================================== -->
+      <section class="module-block" id="ch-exercises">
+        <h2 class="module-heading">React Exercises (Test Yourself!)</h2>
+        <p>Practice what you have learned with these interactive fill-in-the-blank challenges:</p>
+
+        <!-- Exercise 1 -->
+        <div class="exercise-card">
+          <div class="exercise-header">📝 Exercise 1: Starting with JSX</div>
+          <div class="exercise-task">Insert the missing code to render a header with the text "Hello React" inside the root element:</div>
+          <div class="exercise-code-fill">
+            const root = ReactDOM.createRoot(document.getElementById('root'));<br>
+            root.<input type="text" id="ex1-ans" class="exercise-input" placeholder="method" onkeydown="if(event.key===\'Enter\') checkExercise(\'ex1-ans\', \'render\', \'ex1-res\')">(&lt;h1&gt;Hello React&lt;/h1&gt;);
+          </div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+            <button class="btn-submit-exercise" onclick="checkExercise('ex1-ans', 'render', 'ex1-res')">Submit Answer</button>
+            <button class="btn-show-exercise" onclick="showExerciseAnswer('ex1-ans', 'render', 'ex1-res')">Show Answer</button>
+          </div>
+          <div id="ex1-res" class="exercise-result"></div>
+        </div>
+
+        <!-- Exercise 2 -->
+        <div class="exercise-card">
+          <div class="exercise-header">📝 Exercise 2: State Hook</div>
+          <div class="exercise-task">Fill in the blank to initialize a state variable named <code>count</code> with the initial value of <code>0</code>:</div>
+          <div class="exercise-code-fill">
+            const [count, setCount] = <input type="text" id="ex2-ans" class="exercise-input" placeholder="hook name" onkeydown="if(event.key===\'Enter\') checkExercise(\'ex2-ans\', \'useState\', \'ex2-res\')">(0);
+          </div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+            <button class="btn-submit-exercise" onclick="checkExercise('ex2-ans', 'useState', 'ex2-res')">Submit Answer</button>
+            <button class="btn-show-exercise" onclick="showExerciseAnswer('ex2-ans', 'useState', 'ex2-res')">Show Answer</button>
+          </div>
+          <div id="ex2-res" class="exercise-result"></div>
+        </div>
+
+        <!-- Exercise 3 -->
+        <div class="exercise-card">
+          <div class="exercise-header">📝 Exercise 3: HTML Class Attribute</div>
+          <div class="exercise-task">In JSX, what attribute name is used instead of standard HTML "class"?</div>
+          <div class="exercise-code-fill">
+            &lt;div <input type="text" id="ex3-ans" class="exercise-input" placeholder="attribute" onkeydown="if(event.key===\'Enter\') checkExercise(\'ex3-ans\', \'className\', \'ex3-res\')">="card"&gt;Content&lt;/div&gt;
+          </div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+            <button class="btn-submit-exercise" onclick="checkExercise('ex3-ans', 'className', 'ex3-res')">Submit Answer</button>
+            <button class="btn-show-exercise" onclick="showExerciseAnswer('ex3-ans', 'className', 'ex3-res')">Show Answer</button>
+          </div>
+          <div id="ex3-res" class="exercise-result"></div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           FULL INTERACTIVE SANDBOX
+           ==================================================================== -->
+      <section class="module-block" id="sec-live-sandbox">
+        <h2 class="module-heading">⚡ Live Full-Featured React 18 Sandbox</h2>
+        <p>Edit the component below, write any valid JSX or Hooks, and hit <strong>"Run & Render Live"</strong> to compile it live with Babel!</p>
+
+        <div class="tryit-box" style="margin-top: 1rem;">
+          <div class="tryit-header">
+            <span class="tryit-title">Freeform React Playground</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Fully interactive</span>
+          </div>
+          <div class="tryit-split" style="min-height: 300px;">
+            <div class="tryit-editor-pane">
+              <textarea id="main-sandbox-code" spellcheck="false">function CustomDashboard() {
+  const [theme, setTheme] = React.useState("dark");
+  const [count, setCount] = React.useState(100);
+
+  const isDark = theme === "dark";
+
+  return (
+    <div style={{
+      background: isDark ? '#0f172a' : '#f8fafc',
+      color: isDark ? '#f8fafc' : '#0f172a',
+      padding: '20px',
+      borderRadius: '8px',
+      textAlign: 'center',
+      border: '1px solid #334155'
+    }}>
+      <h2>⚡ Interactive Terminal</h2>
+      <p>Current Theme: <strong>{theme.toUpperCase()}</strong></p>
+      <p>Active Count: <strong>{count}</strong></p>
+
+      <div style={{marginTop: '15px', display: 'flex', gap: '8px', justifyContent: 'center'}}>
+        <button 
+          onClick={() => setCount(c => c + 10)}
+          style={{padding: '6px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+        >
+          + 10
+        </button>
+        <button 
+          onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+          style={{padding: '6px 12px', background: '#475569', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+        >
+          Toggle Theme
+        </button>
+      </div>
+    </div>
+  );
+}
+
+return <CustomDashboard />;
+</textarea>
+            </div>
+            <div class="tryit-preview-pane" id="main-sandbox-preview"></div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn-reset-tryit" onclick="resetReactTryIt('main-sandbox-code', 'main-sandbox-preview')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearReactTryIt('main-sandbox-preview')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runTryIt('main-sandbox-code', 'main-sandbox-preview')">▶ Run & Render Live</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation Row -->
+      <div class="chapter-nav-row">
+        <a href="#ch-intro" class="btn-chapter-nav">❮ Home / Intro</a>
+        <a href="#ch-exercises" class="btn-chapter-nav">Exercises & Quizzes ❯</a>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Client JavaScript Logic -->
+  <script>
+    // Reading Progress Indicator
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('readingProgressBar').style.width = scrolled + '%';
+    });
+
+    // Copy Code Utility with Fallback
+    function copyCode(btn) {
+      try {
+        const code = btn.parentElement.nextElementSibling.innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(() => {
+            showCopySuccess(btn);
+          }).catch(() => fallbackCopy(code, btn));
+        } else {
+          fallbackCopy(code, btn);
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function fallbackCopy(text, btn) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showCopySuccess(btn);
+    }
+
+    function showCopySuccess(btn) {
+      const orig = btn.innerText;
+      btn.innerText = 'Copied!';
+      btn.style.color = '#10b981';
+      setTimeout(() => {
+        btn.innerText = orig;
+        btn.style.color = '';
+      }, 1500);
+    }
+
+    // Interactive Exercise Checker (Robust & Lenient)
+    function cleanAnswer(str) {
+      if (!str) return '';
+      return str.toString().trim().toLowerCase()
+        .replace(/^['"`\s]+/, '')
+        .replace(/['"`\s;()]+$/, '')
+        .trim();
+    }
+
+    function checkExercise(inputId, correctAns, resultId) {
+      const rawVal = document.getElementById(inputId).value;
+      const userVal = cleanAnswer(rawVal);
+      const target = cleanAnswer(correctAns);
+      const resEl = document.getElementById(resultId);
+      resEl.style.display = 'block';
+
+      if (userVal && (userVal === target || userVal === target.replace(/\s+/g, ''))) {
+        resEl.style.color = '#10b981';
+        resEl.innerHTML = '✔ Correct! Well done.';
+      } else {
+        resEl.style.color = '#f43f5e';
+        resEl.innerHTML = '✖ Incorrect. Expected: <code>' + correctAns + '</code> (or click "Show Answer")';
+      }
+    }
+
+    function showExerciseAnswer(inputId, correctAns, resultId) {
+      const input = document.getElementById(inputId);
+      input.value = correctAns;
+      const resEl = document.getElementById(resultId);
+      resEl.style.display = 'block';
+      resEl.style.color = '#10b981';
+      resEl.innerHTML = '✔ Answer filled: <code>' + correctAns + '</code>';
+    }
+
+    // Reset and Clear Try-It Utilities
+    const initialReactCodes = {};
+
+    function resetReactTryIt(editorId, previewId) {
+      if (initialReactCodes[editorId]) {
+        document.getElementById(editorId).value = initialReactCodes[editorId];
+      }
+      runTryIt(editorId, previewId);
+    }
+
+    function clearReactTryIt(previewId) {
+      const previewEl = document.getElementById(previewId);
+      if (previewEl) {
+        if (mountedRoots[previewId]) {
+          try { mountedRoots[previewId].unmount(); } catch(e) {}
+          delete mountedRoots[previewId];
+        }
+        previewEl.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:1rem; font-style:italic;">Preview cleared. Click "▶ Run Code" to execute.</div>';
+      }
+    }
+
+    // Try it Yourself Live Execution Engine
+    const mountedRoots = {};
+
+    function runTryIt(editorId, previewId) {
+      let code = document.getElementById(editorId).value;
+      const previewEl = document.getElementById(previewId);
+
+      try {
+        // 1. Cleanly strip any ES module import/export statements
+        code = code.replace(/import\s+.*?\s+from\s+['"].*?['"];?/g, '');
+        code = code.replace(/export\s+default\s+/g, '');
+        code = code.replace(/export\s+/g, '');
+
+        // 2. If code defines a component but doesn't have an explicit return statement,
+        // find the last declared function component name and return <ComponentName />
+        let autoReturn = '';
+        if (!code.includes('return <') && !code.includes('return(') && !code.includes('return (')) {
+          const matchFunc = code.match(/function\s+([A-Z][A-Za-z0-9_]*)/g);
+          if (matchFunc && matchFunc.length > 0) {
+            const lastName = matchFunc[matchFunc.length - 1].replace('function', '').trim();
+            autoReturn = `\nreturn <${lastName} />;`;
+          }
+        }
+
+        // 3. Wrap with React hooks destructured in scope
+        const wrappedCode = `
+          (function() {
+            const { useState, useEffect, useRef, useContext, useReducer, useMemo, useCallback } = React;
+            ${code}
+            ${autoReturn}
+          })()
+        `;
+
+        // 4. Transpile with classic React runtime (produces React.createElement without module imports)
+        const transformed = Babel.transform(wrappedCode, {
+          presets: [
+            ['react', { runtime: 'classic' }]
+          ]
+        }).code;
+
+        const componentInstance = eval(transformed);
+
+        if (!mountedRoots[previewId]) {
+          mountedRoots[previewId] = ReactDOM.createRoot(previewEl);
+        }
+        mountedRoots[previewId].render(componentInstance);
+      } catch (err) {
+        previewEl.innerHTML = `<div style="color: #f43f5e; font-family: monospace; font-size: 0.8rem; padding: 10px; background: rgba(244,63,94,0.08); border-radius: 6px; border: 1px solid rgba(244,63,94,0.2);">
+          ⚠️ <strong>Compilation Error:</strong><br>${err.message}
+        </div>`;
+      }
+    }
+
+    // Instant Search
+    function handleSearch(term) {
+      const sections = document.querySelectorAll('.module-block');
+      const lower = term.toLowerCase().trim();
+      sections.forEach(sec => {
+        if (!lower || sec.innerText.toLowerCase().includes(lower)) {
+          sec.style.display = 'block';
+        } else {
+          sec.style.display = 'none';
+        }
+      });
+    }
+
+    // Auto-run all try-it widgets once the DOM is ready & cache initial templates
+    window.addEventListener('DOMContentLoaded', () => {
+      const editors = [
+        'tryit-es6-code', 'tryit-jsx-code', 'tryit-props-code', 
+        'tryit-state-code', 'tryit-list-code', 'tryit-form-code', 
+        'tryit-effect-code', 'main-sandbox-code'
+      ];
+      editors.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) initialReactCodes[id] = el.value;
+      });
+
+      setTimeout(() => {
+        runTryIt('tryit-es6-code', 'tryit-es6-preview');
+        runTryIt('tryit-jsx-code', 'tryit-jsx-preview');
+        runTryIt('tryit-props-code', 'tryit-props-preview');
+        runTryIt('tryit-state-code', 'tryit-state-preview');
+        runTryIt('tryit-list-code', 'tryit-list-preview');
+        runTryIt('tryit-form-code', 'tryit-form-preview');
+        runTryIt('tryit-effect-code', 'tryit-effect-preview');
+        runTryIt('main-sandbox-code', 'main-sandbox-preview');
+      }, 300);
+    });
+  </script>
+</body>
+</html>

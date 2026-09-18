@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>React Mini Example: Interactive Counter</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .card { background: #1e293b; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; border: 1px solid #334155; }
+    .count { font-size: 4rem; font-weight: 800; color: #38bdf8; margin: 1rem 0; }
+    .btn-group { display: flex; gap: 0.75rem; justify-content: center; }
+    button { background: #0284c7; color: white; border: none; padding: 0.75rem 1.5rem; font-size: 1.1rem; font-weight: 600; border-radius: 0.5rem; cursor: pointer; transition: 0.15s; }
+    button:hover { background: #0ea5e9; transform: translateY(-2px); }
+    button.reset { background: #475569; }
+    button.reset:hover { background: #64748b; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function CounterApp() {
+      const [count, setCount] = useState(0);
+
+      return (
+        <div className="card">
+          <h2>React State Counter</h2>
+          <div className="count">{count}</div>
+          <div className="btn-group">
+            <button onClick={() => setCount(prev => prev - 1)}>− Decrement</button>
+            <button className="reset" onClick={() => setCount(0)}>Reset</button>
+            <button onClick={() => setCount(prev => prev + 1)}>+ Increment</button>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<CounterApp />);
+  </script>
+</body>
+</html>

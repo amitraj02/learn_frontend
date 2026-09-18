@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Tutorial — Learn JS Step by Step (Basics to Advanced ES6+)</title>
+  <meta name="description" content="The most reliable, step-by-step JavaScript tutorial for freshers and developers. Inspired by W3Schools & TutorialsPoint clarity. Learn variables, functions, closures, array methods, async/await, and DOM with interactive live code playgrounds.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #0b0f19;
+      --bg-surface: #111726;
+      --bg-card: #162035;
+      --bg-card-hover: #1e2b45;
+      --bg-code: #090d16;
+      --border-subtle: #212e47;
+      --border-highlight: #33486c;
+
+      --js-yellow: #f7df1e;
+      --js-yellow-dark: #d6be0b;
+      --accent-cyan: #00d8ff;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+
+      --font-heading: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.65;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--border-highlight); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--js-yellow); }
+
+    /* Top Navbar */
+    .top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(11, 15, 25, 0.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 1.75rem;
+      gap: 1rem;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .js-logo-badge {
+      background: var(--js-yellow);
+      color: #000;
+      font-family: var(--font-heading);
+      font-weight: 900;
+      font-size: 1.15rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--js-yellow), #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .js-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: rgba(247, 223, 30, 0.15);
+      color: var(--js-yellow);
+      border: 1px solid rgba(247, 223, 30, 0.3);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .nav-link-btn {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.35rem 0.65rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s;
+    }
+    .nav-link-btn:hover {
+      color: var(--js-yellow);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-search {
+      flex: 1;
+      max-width: 380px;
+      position: relative;
+    }
+    .nav-search input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 0.45rem 1rem 0.45rem 2.2rem;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .nav-search input:focus {
+      border-color: var(--js-yellow);
+    }
+    .nav-search svg {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      color: var(--text-muted);
+    }
+
+    .btn-sandbox-nav {
+      background: var(--js-yellow);
+      color: #000;
+      border: none;
+      padding: 0.45rem 1.1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s;
+    }
+    .btn-sandbox-nav:hover {
+      background: var(--js-yellow-dark);
+      transform: translateY(-1px);
+    }
+
+    /* Reading Progress Bar */
+    .reading-progress-track {
+      position: fixed;
+      top: 53px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+      z-index: 999;
+    }
+    .reading-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--js-yellow), var(--accent-emerald), var(--accent-cyan));
+      transition: width 0.1s linear;
+    }
+
+    /* App Container Layout */
+    .app-container {
+      display: flex;
+      max-width: 1680px;
+      margin: 0 auto;
+      min-height: calc(100vh - 53px);
+    }
+
+    /* Left Sidebar Navigation */
+    .app-sidebar {
+      width: 300px;
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.25rem 0.85rem;
+      position: sticky;
+      top: 56px;
+      height: calc(100vh - 56px);
+      overflow-y: auto;
+    }
+    .sidebar-category {
+      margin-bottom: 1.5rem;
+    }
+    .sidebar-category-title {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+    .sidebar-nav-list {
+      list-style: none;
+    }
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0.65rem;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+    .sidebar-nav-link:hover {
+      background: var(--bg-card);
+      color: var(--js-yellow);
+    }
+    .sidebar-nav-link.active {
+      background: rgba(247, 223, 30, 0.1);
+      color: var(--js-yellow);
+      font-weight: 600;
+      border-left: 3px solid var(--js-yellow);
+    }
+
+    /* Main Content Area */
+    .app-main {
+      flex: 1;
+      padding: 2rem 3rem;
+      max-width: 1040px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: radial-gradient(circle at 10% 20%, rgba(247, 223, 30, 0.1) 0%, transparent 60%),
+                  radial-gradient(circle at 90% 80%, rgba(0, 216, 255, 0.1) 0%, transparent 60%),
+                  var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    .hero-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(247, 223, 30, 0.15);
+      color: var(--js-yellow);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+    }
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, var(--js-yellow), #00d8ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Panel Boxes */
+    .js-panel {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      margin: 1.25rem 0;
+      font-size: 0.9rem;
+    }
+    .js-note {
+      background: rgba(0, 216, 255, 0.08);
+      border-left: 4px solid var(--accent-cyan);
+      color: #bae6fd;
+    }
+    .js-tip {
+      background: rgba(247, 223, 30, 0.08);
+      border-left: 4px solid var(--js-yellow);
+      color: #fef08a;
+    }
+
+    /* Interactive "Try it Yourself" Live Sandbox Boxes */
+    .tryit-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-radius: var(--radius-md);
+      margin: 1.5rem 0 2.25rem 0;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+    .tryit-header {
+      background: #111726;
+      padding: 0.65rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .tryit-title {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .tryit-split {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      min-height: 240px;
+    }
+    .tryit-editor-pane {
+      background: #080d16;
+      border-right: 1px solid var(--border-subtle);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .tryit-editor-pane textarea {
+      flex: 1;
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #7dd3fc;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.55;
+      resize: none;
+      outline: none;
+    }
+    .tryit-output-pane {
+      background: #090d16;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #a3e635;
+      overflow-y: auto;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      min-width: 0;
+    }
+    .tryit-footer {
+      background: #0d1422;
+      border-top: 1px solid var(--border-subtle);
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-run-tryit {
+      background: var(--js-yellow);
+      color: #000;
+      border: none;
+      padding: 0.4rem 1.1rem;
+      font-weight: 700;
+      font-size: 0.8rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.15s;
+    }
+    .btn-run-tryit:hover {
+      background: var(--js-yellow-dark);
+    }
+
+    /* Content Modules */
+    .module-block {
+      margin-bottom: 4rem;
+      scroll-margin-top: 75px;
+    }
+    .module-heading {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border-subtle);
+      padding-bottom: 0.5rem;
+    }
+    .module-subheading {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.5rem 0;
+      color: var(--js-yellow);
+    }
+
+    /* Code Snippet Box */
+    .code-box {
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.4rem 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    pre.code-text {
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.55;
+    }
+    .btn-copy-code {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .btn-copy-code:hover {
+      color: var(--js-yellow);
+      border-color: var(--js-yellow);
+    }
+
+    /* Tables */
+    .js-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.875rem;
+    }
+    .js-table th, .js-table td {
+      border: 1px solid var(--border-subtle);
+      padding: 0.65rem 0.9rem;
+      text-align: left;
+    }
+    .js-table th {
+      background: var(--bg-card);
+      color: var(--js-yellow);
+      font-weight: 700;
+    }
+    .js-table tr:nth-child(even) { background: rgba(255, 255, 255, 0.015); }
+
+    /* Interactive Exercises */
+    .exercise-box {
+      background: #111726;
+      border: 1px solid #263554;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .exercise-header {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--js-yellow);
+      margin-bottom: 0.4rem;
+    }
+    .exercise-fill-code {
+      background: #080d16;
+      border: 1px solid var(--border-subtle);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      margin: 1rem 0;
+      line-height: 1.8;
+    }
+    .exercise-input {
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      outline: none;
+      width: 130px;
+    }
+    .exercise-input:focus {
+      border-color: var(--js-yellow);
+    }
+    .btn-submit-ex {
+      background: var(--js-yellow);
+      color: #000;
+      border: none;
+      padding: 0.45rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-submit-ex:hover {
+      background: var(--js-yellow-dark);
+      transform: translateY(-1px);
+    }
+    .btn-show-ans {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-highlight);
+      padding: 0.45rem 1rem;
+      font-weight: 600;
+      font-size: 0.8rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-show-ans:hover {
+      color: var(--js-yellow);
+      border-color: var(--js-yellow);
+      background: rgba(247, 223, 30, 0.05);
+    }
+
+    .btn-reset-tryit {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-reset-tryit:hover {
+      color: var(--text-primary);
+      border-color: var(--border-highlight);
+      background: var(--bg-surface);
+    }
+
+    .btn-clear-tryit {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-clear-tryit:hover {
+      color: var(--accent-rose);
+      border-color: rgba(244, 63, 94, 0.4);
+    }
+
+    /* Chapter Navigation */
+    .chapter-nav-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .btn-chapter-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.15s;
+    }
+    .btn-chapter-nav:hover {
+      border-color: var(--js-yellow);
+      color: var(--js-yellow);
+      background: var(--bg-surface);
+    }
+
+    @media (max-width: 1024px) {
+      .app-sidebar { display: none; }
+      .app-main { padding: 1.5rem; }
+      .tryit-split { grid-template-columns: 1fr; }
+    }
+
+    /* Embedded Mode in Master Hub */
+    .is-embedded .global-nav-link,
+    .is-embedded .nav-brand {
+      display: none !important;
+    }
+    .is-embedded .top-navbar {
+      top: 0;
+      padding: 0.4rem 1.25rem;
+      background: rgba(15, 23, 42, 0.95);
+    }
+  </style>
+  <script>
+    if (window.self !== window.top) {
+      document.documentElement.classList.add('is-embedded');
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.add('is-embedded');
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="top-navbar">
+    <div class="nav-left">
+      <a href="#" class="nav-brand">
+        <div class="js-logo-badge">JS</div>
+        <span class="brand-title">JavaScript Tutorial</span>
+        <span class="js-badge">Simple Way</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="../full_frontend_learn.html" target="_top" class="nav-link-btn global-nav-link" style="color: #38bdf8;">🏠 Hub</a>
+        <a href="#sec-variables" class="nav-link-btn">Variables</a>
+        <a href="#sec-functions" class="nav-link-btn">Functions</a>
+        <a href="#sec-arrays" class="nav-link-btn">Arrays</a>
+        <a href="#sec-async" class="nav-link-btn">Async/Await</a>
+        <a href="#sec-exercises" class="nav-link-btn">Exercises</a>
+        <a href="../about_me.html" target="_top" class="nav-link-btn global-nav-link" style="color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4);">👤 About Me</a>
+      </div>
+    </div>
+
+    <div class="nav-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search JavaScript concepts (e.g. closures, map, promises)..." oninput="handleSearch(this.value)">
+    </div>
+
+    <div>
+      <button class="btn-sandbox-nav" onclick="document.getElementById('sec-live-sandbox').scrollIntoView({behavior:'smooth'})">
+        <span>⚡ JS Sandbox</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Reading Progress -->
+  <div class="reading-progress-track">
+    <div class="reading-progress-bar" id="readingProgressBar"></div>
+  </div>
+
+  <div class="app-container">
+
+    <!-- Left Categorized Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">JS Basics</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-intro" class="sidebar-nav-link active">JS HOME / Intro</a></li>
+          <li><a href="#sec-variables" class="sidebar-nav-link">Variables (let, const, var)</a></li>
+          <li><a href="#sec-datatypes" class="sidebar-nav-link">Data Types & == vs ===</a></li>
+          <li><a href="#sec-operators" class="sidebar-nav-link">Operators (??, ?.)</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">Functions & Scope</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-functions" class="sidebar-nav-link">Functions & Arrow Syntax</a></li>
+          <li><a href="#sec-closures" class="sidebar-nav-link">Closures (Backpack Analogy)</a></li>
+          <li><a href="#sec-this" class="sidebar-nav-link">The 'this' Keyword</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">Objects & Arrays</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-objects" class="sidebar-nav-link">Objects & Destructuring</a></li>
+          <li><a href="#sec-arrays" class="sidebar-nav-link">Array Methods (map, filter, reduce)</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">Asynchronous JS</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-async" class="sidebar-nav-link">Promises & Event Loop</a></li>
+          <li><a href="#sec-await" class="sidebar-nav-link">async / await & fetch()</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-category">
+        <div class="sidebar-category-title">Practice & Resources</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="#sec-exercises" class="sidebar-nav-link">Test Yourself Exercises</a></li>
+          <li><a href="#sec-live-sandbox" class="sidebar-nav-link">Live JS Console Sandbox</a></li>
+          <li><a href="#sec-interview" class="sidebar-nav-link">Top 25 Interview Q&As</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-main">
+
+      <!-- Hero Header -->
+      <section class="hero-banner" id="sec-intro">
+        <span class="hero-badge">The Core Language of the Web</span>
+        <h1 class="hero-title">Learn <span>JavaScript</span> the Simple Way</h1>
+        <p class="hero-subtitle">
+          JavaScript is the world's most popular programming language. It powers modern web browsers, Node.js backends, React, Next.js, and algorithmic trading systems.
+        </p>
+
+        <div class="js-panel js-tip" style="margin-top: 1.5rem;">
+          <strong>💡 Interactive Learning:</strong> Every code example below has a <strong>"Try it Yourself"</strong> button. Click "Run Code" to execute JavaScript live in your browser!
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           MODULE 01: VARIABLES (LET, CONST, VAR)
+           ==================================================================== -->
+      <section class="module-block" id="sec-variables">
+        <h2 class="module-heading">JavaScript Variables (let, const, var)</h2>
+        <p>Variables are containers for storing data values. In modern JavaScript (ES6+), we have three ways to declare a variable:</p>
+
+        <table class="js-table">
+          <thead>
+            <tr>
+              <th>Keyword</th>
+              <th>Scope</th>
+              <th>Can Reassign?</th>
+              <th>Hoisted?</th>
+              <th>When to Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>const</strong></td>
+              <td>Block <code>{ }</code></td>
+              <td>❌ No</td>
+              <td>Temporal Dead Zone</td>
+              <td><strong>Default choice</strong> (90% of your code!)</td>
+            </tr>
+            <tr>
+              <td><strong>let</strong></td>
+              <td>Block <code>{ }</code></td>
+              <td>✅ Yes</td>
+              <td>Temporal Dead Zone</td>
+              <td>When variable will change (loops, counters)</td>
+            </tr>
+            <tr>
+              <td><strong>var</strong></td>
+              <td>Function</td>
+              <td>✅ Yes</td>
+              <td>Hoisted as undefined</td>
+              <td>Avoid in modern JS (legacy keyword)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- TRY IT YOURSELF: VARIABLES -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: const vs let Scope</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Editable JS code</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-var-code" spellcheck="false">const stock = "RELIANCE";
+let price = 2950.00;
+
+// Update let variable:
+price = price + 15.50;
+
+console.log("Stock Ticker:", stock);
+console.log("Updated Price: ₹" + price);
+
+// Block scope test:
+if (true) {
+  let blockVariable = "Only inside this block!";
+  console.log(blockVariable);
+}
+</textarea>
+            </div>
+            <div class="tryit-output-pane" id="tryit-var-out">// Click "Run Code" to view console output</div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <button class="btn-reset-tryit" onclick="resetTryIt('tryit-var-code', 'tryit-var-out')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearTryIt('tryit-var-out')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runJsCode('tryit-var-code', 'tryit-var-out')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           MODULE 02: DATA TYPES & EQUALITY
+           ==================================================================== -->
+      <section class="module-block" id="sec-datatypes">
+        <h2 class="module-heading">Data Types & Strict Equality (=== vs ==)</h2>
+        <p>JavaScript has 7 primitive types (Number, String, Boolean, Null, Undefined, BigInt, Symbol) and Object reference types.</p>
+
+        <div class="js-panel js-note">
+          <strong>⚠️ The == vs === Difference:</strong><br>
+          <code>==</code> (Loose Equality) performs automatic type conversion before comparing.<br>
+          <code>===</code> (Strict Equality) compares value AND type without conversion. Always use <code>===</code>!
+        </div>
+
+        <!-- TRY IT YOURSELF: EQUALITY -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: Strict vs Loose Equality</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Type coercion test</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-eq-code" spellcheck="false">console.log("5 == '5' :", 5 == '5');       // true (coerced string to number)
+console.log("5 === '5':", 5 === '5');     // false (strict check: number vs string)
+console.log("0 == false:", 0 == false);   // true (falsy coercion)
+console.log("0 === false:", 0 === false); // false (number vs boolean)
+console.log("typeof null:", typeof null); // 'object' (famous JS legacy quirk!)
+</textarea>
+            </div>
+            <div class="tryit-output-pane" id="tryit-eq-out">// Output appears here</div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <button class="btn-reset-tryit" onclick="resetTryIt('tryit-eq-code', 'tryit-eq-out')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearTryIt('tryit-eq-out')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runJsCode('tryit-eq-code', 'tryit-eq-out')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           MODULE 03: FUNCTIONS & ARROW FUNCTIONS
+           ==================================================================== -->
+      <section class="module-block" id="sec-functions">
+        <h2 class="module-heading">Functions & Arrow Syntax</h2>
+        <p>A JavaScript function is a block of code designed to perform a particular task.</p>
+
+        <div class="code-box">
+          <div class="code-box-header"><span>Function Declaration vs Arrow Function</span><button class="btn-copy-code" onclick="copyCode(this)">Copy</button></div>
+          <pre class="code-text"><code>// 1. Traditional Function Declaration:
+function calculateTurnover(shares, price) {
+  return shares * price;
+}
+
+// 2. Modern ES6 Arrow Function (Concise):
+const calculateTurnover = (shares, price) => shares * price;</code></pre>
+        </div>
+
+        <!-- TRY IT YOURSELF: FUNCTIONS & CLOSURES -->
+        <div class="tryit-box" id="sec-closures">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: Functions & Closures</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Backpack memory</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-fn-code" spellcheck="false">// A Closure: Inner function remembers outer function's variable!
+function createOrderBook(symbol) {
+  let ordersCount = 0; // Stored in closure memory
+
+  return function placeOrder(qty) {
+    ordersCount++;
+    return `[${symbol}] Order #${ordersCount} placed for ${qty} shares.`;
+  };
+}
+
+const relianceBot = createOrderBook("RELIANCE");
+console.log(relianceBot(100));
+console.log(relianceBot(50));
+console.log(relianceBot(200));
+</textarea>
+            </div>
+            <div class="tryit-output-pane" id="tryit-fn-out">// Output appears here</div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <button class="btn-reset-tryit" onclick="resetTryIt('tryit-fn-code', 'tryit-fn-out')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearTryIt('tryit-fn-out')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runJsCode('tryit-fn-code', 'tryit-fn-out')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           MODULE 04: ARRAY METHODS (.MAP, .FILTER, .REDUCE)
+           ==================================================================== -->
+      <section class="module-block" id="sec-arrays">
+        <h2 class="module-heading">Arrays & The 3 Holy Methods (map, filter, reduce)</h2>
+        <p>In modern React and JavaScript development, we use functional array methods instead of traditional <code>for</code> loops:</p>
+
+        <!-- TRY IT YOURSELF: ARRAYS -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: Array Methods in Action</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Transform & filter trading data</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-arr-code" spellcheck="false">const trades = [
+  { id: 1, symbol: "RELIANCE", pnl: 4500 },
+  { id: 2, symbol: "INFY", pnl: -1200 },
+  { id: 3, symbol: "TCS", pnl: 3200 },
+  { id: 4, symbol: "SBIN", pnl: -800 }
+];
+
+// 1. FILTER: Keep only winning trades
+const winners = trades.filter(t => t.pnl > 0);
+console.log("Winning Trades Count:", winners.length);
+
+// 2. MAP: Extract just the tickers
+const symbols = trades.map(t => t.symbol);
+console.log("Traded Symbols:", symbols);
+
+// 3. REDUCE: Calculate total portfolio net profit
+const totalPnL = trades.reduce((sum, t) => sum + t.pnl, 0);
+console.log("Total Net PnL: ₹" + totalPnL);
+</textarea>
+            </div>
+            <div class="tryit-output-pane" id="tryit-arr-out">// Output appears here</div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <button class="btn-reset-tryit" onclick="resetTryIt('tryit-arr-code', 'tryit-arr-out')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearTryIt('tryit-arr-out')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runJsCode('tryit-arr-code', 'tryit-arr-out')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           MODULE 05: ASYNC / AWAIT & PROMISES
+           ==================================================================== -->
+      <section class="module-block" id="sec-async">
+        <h2 class="module-heading" id="sec-await">Asynchronous JavaScript (Promises & async/await)</h2>
+        <p>JavaScript is single-threaded. To prevent freezing the screen while waiting for an API or database, we use <strong>Promises</strong> and <strong>async / await</strong>.</p>
+
+        <!-- TRY IT YOURSELF: ASYNC -->
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">🧪 Try it Yourself: async / await Simulation</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Asynchronous timing</span>
+          </div>
+          <div class="tryit-split">
+            <div class="tryit-editor-pane">
+              <textarea id="tryit-async-code" spellcheck="false">// Simulated async network fetch using Promise
+function fetchLivePrice(ticker) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ symbol: ticker, price: 2954.50, timestamp: new Date().toLocaleTimeString() });
+    }, 800);
+  });
+}
+
+async function getQuote() {
+  console.log("⏳ Fetching market quote from server...");
+  const data = await fetchLivePrice("RELIANCE");
+  console.log("✔ Received Quote:", data.symbol, "@ ₹" + data.price, "at", data.timestamp);
+}
+
+getQuote();
+</textarea>
+            </div>
+            <div class="tryit-output-pane" id="tryit-async-out">// Output appears here</div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <button class="btn-reset-tryit" onclick="resetTryIt('tryit-async-code', 'tryit-async-out')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearTryIt('tryit-async-out')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runJsCode('tryit-async-code', 'tryit-async-out')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TEST YOURSELF WITH EXERCISES
+           ==================================================================== -->
+      <section class="module-block" id="sec-exercises">
+        <h2 class="module-heading">JavaScript Exercises (Test Yourself!)</h2>
+        <p>Test your knowledge with these interactive fill-in-the-blank questions:</p>
+
+        <!-- Exercise 1 -->
+        <div class="exercise-box">
+          <div class="exercise-header">📝 Exercise 1: Constant Variable</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">Which keyword creates a block-scoped variable that CANNOT be reassigned?</p>
+          <div class="exercise-fill-code">
+            <input type="text" id="ex1-ans" class="exercise-input" placeholder="keyword" onkeydown="if(event.key==='Enter') checkJsEx('ex1-ans', 'const', 'ex1-res')"> PI = 3.14159;
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="btn-submit-ex" onclick="checkJsEx('ex1-ans', 'const', 'ex1-res')">Submit Answer</button>
+            <button class="btn-show-ans" onclick="showJsAnswer('ex1-ans', 'const', 'ex1-res')">Show Answer</button>
+          </div>
+          <div id="ex1-res" style="margin-top: 0.75rem; font-weight: 600; display: none;"></div>
+        </div>
+
+        <!-- Exercise 2 -->
+        <div class="exercise-box">
+          <div class="exercise-header">📝 Exercise 2: Array Transformation</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">Which array method transforms every element in an array and returns a new array?</p>
+          <div class="exercise-fill-code">
+            const doubled = numbers.<input type="text" id="ex2-ans" class="exercise-input" placeholder="method" onkeydown="if(event.key==='Enter') checkJsEx('ex2-ans', 'map', 'ex2-res')">(x => x * 2);
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="btn-submit-ex" onclick="checkJsEx('ex2-ans', 'map', 'ex2-res')">Submit Answer</button>
+            <button class="btn-show-ans" onclick="showJsAnswer('ex2-ans', 'map', 'ex2-res')">Show Answer</button>
+          </div>
+          <div id="ex2-res" style="margin-top: 0.75rem; font-weight: 600; display: none;"></div>
+        </div>
+
+        <!-- Exercise 3 -->
+        <div class="exercise-box">
+          <div class="exercise-header">📝 Exercise 3: Async Await</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">What keyword is placed before a Promise inside an async function to wait for it?</p>
+          <div class="exercise-fill-code">
+            const data = <input type="text" id="ex3-ans" class="exercise-input" placeholder="keyword" onkeydown="if(event.key==='Enter') checkJsEx('ex3-ans', 'await', 'ex3-res')"> fetch('/api/stocks');
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="btn-submit-ex" onclick="checkJsEx('ex3-ans', 'await', 'ex3-res')">Submit Answer</button>
+            <button class="btn-show-ans" onclick="showJsAnswer('ex3-ans', 'await', 'ex3-res')">Show Answer</button>
+          </div>
+          <div id="ex3-res" style="margin-top: 0.75rem; font-weight: 600; display: none;"></div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           FREEFORM LIVE JAVASCRIPT SANDBOX
+           ==================================================================== -->
+      <section class="module-block" id="sec-live-sandbox">
+        <h2 class="module-heading">⚡ Live JavaScript Console Sandbox</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+          Write any JavaScript code here. Use <code>console.log()</code> to inspect variables and debug algorithms!
+        </p>
+
+        <div class="tryit-box">
+          <div class="tryit-header">
+            <span class="tryit-title">Freeform JavaScript Playground</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Direct execution</span>
+          </div>
+          <div class="tryit-split" style="min-height: 280px;">
+            <div class="tryit-editor-pane">
+              <textarea id="main-sandbox-code" spellcheck="false">// Algorithmic Trading Signal Calculator
+function checkEMAStrategy(currentPrice, ema20, rsi) {
+  console.log(`Analyzing: Price=₹${currentPrice}, EMA20=₹${ema20}, RSI=${rsi}`);
+  
+  if (currentPrice > ema20 && rsi < 70) {
+    return "🟢 SIGNAL: BUY / LONG (Bullish momentum)";
+  } else if (currentPrice < ema20 && rsi > 30) {
+    return "🔴 SIGNAL: SELL / SHORT (Bearish breakdown)";
+  } else {
+    return "🟡 SIGNAL: HOLD / NEUTRAL";
+  }
+}
+
+const decision = checkEMAStrategy(2950, 2920, 58);
+console.log("Decision:", decision);
+</textarea>
+            </div>
+            <div class="tryit-output-pane" id="main-sandbox-out">// Click Run Code to execute</div>
+          </div>
+          <div class="tryit-footer">
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <button class="btn-reset-tryit" onclick="resetTryIt('main-sandbox-code', 'main-sandbox-out')">↺ Reset</button>
+              <button class="btn-clear-tryit" onclick="clearTryIt('main-sandbox-out')">✕ Clear</button>
+            </div>
+            <button class="btn-run-tryit" onclick="runJsCode('main-sandbox-code', 'main-sandbox-out')">▶ Run Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TOP INTERVIEW QUESTIONS
+           ==================================================================== -->
+      <section class="module-block" id="sec-interview">
+        <h2 class="module-heading">Top JavaScript Interview Questions & Answers</h2>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: 8px; margin-bottom: 1rem;">
+          <h4 style="color: var(--js-yellow);">Q1: What is the Event Loop and how does it handle asynchronous code?</h4>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.35rem;">
+            JavaScript is single-threaded with one Call Stack. Asynchronous tasks (like Promises and timers) are handled by Web APIs. When completed, their callbacks go into the <strong>Microtask Queue</strong> (Promises) or <strong>Macrotask Queue</strong> (setTimeout). The Event Loop pushes tasks onto the Call Stack whenever it becomes empty, prioritizing microtasks first!
+          </p>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: 8px; margin-bottom: 1rem;">
+          <h4 style="color: var(--js-yellow);">Q2: What is the difference between null and undefined?</h4>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.35rem;">
+            <code>undefined</code> means a variable has been declared but has not yet been assigned a value. <code>null</code> is an assignment value that represents an intentional absence of any object value.
+          </p>
+        </div>
+      </section>
+
+      <!-- Chapter Navigation Row -->
+      <div class="chapter-nav-row">
+        <a href="#sec-intro" class="btn-chapter-nav">❮ Home / Intro</a>
+        <a href="#sec-exercises" class="btn-chapter-nav">Exercises & Quizzes ❯</a>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Client Script for Interactive Live JS Runner & Exercises -->
+  <script>
+    // Reading Progress
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('readingProgressBar').style.width = scrolled + '%';
+    });
+
+    // Copy Code Utility with Fallback
+    function copyCode(btn) {
+      try {
+        const code = btn.parentElement.nextElementSibling.innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(() => {
+            showCopySuccess(btn);
+          }).catch(() => fallbackCopy(code, btn));
+        } else {
+          fallbackCopy(code, btn);
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function fallbackCopy(text, btn) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showCopySuccess(btn);
+    }
+
+    function showCopySuccess(btn) {
+      const orig = btn.innerText;
+      btn.innerText = 'Copied!';
+      btn.style.color = '#10b981';
+      setTimeout(() => {
+        btn.innerText = orig;
+        btn.style.color = '';
+      }, 1500);
+    }
+
+    // Default code memory for Reset buttons
+    const defaultCodes = {};
+
+    // Interactive JavaScript Live Runner (Streams console.log in real time)
+    function runJsCode(editorId, outputId) {
+      const code = document.getElementById(editorId).value;
+      const outputEl = document.getElementById(outputId);
+      outputEl.innerHTML = '';
+
+      let logsCount = 0;
+
+      function appendLog(text, color = '#a3e635') {
+        const line = document.createElement('div');
+        line.style.color = color;
+        line.style.margin = '2px 0';
+        line.innerText = text;
+        outputEl.appendChild(line);
+        outputEl.scrollTop = outputEl.scrollHeight;
+        logsCount++;
+      }
+
+      const customConsole = {
+        log: (...args) => {
+          const str = args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ');
+          appendLog(str, '#a3e635');
+        },
+        error: (...args) => {
+          const str = '❌ ' + args.join(' ');
+          appendLog(str, '#f43f5e');
+        },
+        warn: (...args) => {
+          const str = '⚠️ ' + args.join(' ');
+          appendLog(str, '#f59e0b');
+        }
+      };
+
+      try {
+        const runner = new Function('console', code);
+        const result = runner(customConsole);
+
+        // If code returned an expression directly without console.log (e.g. 10 + 20)
+        if (result !== undefined && logsCount === 0) {
+          const resStr = typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result);
+          appendLog('➔ ' + resStr, '#00d8ff');
+        } else if (logsCount === 0) {
+          appendLog('(Executed successfully with 0 output)', '#64748b');
+        }
+      } catch (err) {
+        appendLog('⚠️ Runtime Error: ' + err.message, '#f43f5e');
+      }
+    }
+
+    // Reset code to original
+    function resetTryIt(editorId, outputId) {
+      if (defaultCodes[editorId] !== undefined) {
+        document.getElementById(editorId).value = defaultCodes[editorId];
+      }
+      runJsCode(editorId, outputId);
+    }
+
+    // Clear console output
+    function clearTryIt(outputId) {
+      document.getElementById(outputId).innerHTML = '<span style="color:#64748b;">// Console cleared</span>';
+    }
+
+    // Robust Exercise Checker (Strips quotes, semicolons, and spaces)
+    function cleanAnswer(str) {
+      if (!str) return '';
+      return str.trim().toLowerCase()
+        .replace(/^['"`\s]+/, '')
+        .replace(/['"`\s;()]+$/, '')
+        .trim();
+    }
+
+    function checkJsEx(inputId, correctAns, resultId) {
+      const rawVal = document.getElementById(inputId).value;
+      const val = cleanAnswer(rawVal);
+      const target = cleanAnswer(correctAns);
+      const res = document.getElementById(resultId);
+      res.style.display = 'block';
+
+      if (val === target) {
+        res.style.color = '#10b981';
+        res.innerHTML = '✔ Correct! Well done.';
+      } else {
+        res.style.color = '#f43f5e';
+        res.innerHTML = '✖ Incorrect. Expected: <code>' + correctAns + '</code>';
+      }
+    }
+
+    // Show Answer helper
+    function showJsAnswer(inputId, correctAns, resultId) {
+      document.getElementById(inputId).value = correctAns;
+      checkJsEx(inputId, correctAns, resultId);
+    }
+
+    // Instant Search Filter
+    function handleSearch(term) {
+      const sections = document.querySelectorAll('.module-block');
+      const lower = term.toLowerCase().trim();
+      sections.forEach(sec => {
+        if (!lower || sec.innerText.toLowerCase().includes(lower)) {
+          sec.style.display = 'block';
+        } else {
+          sec.style.display = 'none';
+        }
+      });
+    }
+
+    // Auto-save default codes and run initial examples once loaded
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('textarea').forEach(ta => {
+        defaultCodes[ta.id] = ta.value;
+      });
+
+      setTimeout(() => {
+        runJsCode('tryit-var-code', 'tryit-var-out');
+        runJsCode('tryit-eq-code', 'tryit-eq-out');
+        runJsCode('tryit-fn-code', 'tryit-fn-out');
+        runJsCode('tryit-arr-code', 'tryit-arr-out');
+        runJsCode('tryit-async-code', 'tryit-async-out');
+        runJsCode('main-sandbox-code', 'main-sandbox-out');
+      }, 200);
+    });
+  </script>
+</body>
+</html>
